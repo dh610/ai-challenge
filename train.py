@@ -31,12 +31,10 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10)
 
-if torch.cuda.is_available:
-    print("CUDA is ready")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-if device != "cuda":
+if not torch.cuda.is_available():
     print("CUDA is disabled")
-    sys.exit()
+    sys.exit
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 num_epochs = 10
