@@ -21,7 +21,7 @@ test_images_tensor = torch.tensor(test_images).float()
 train_dataset = TensorDataset(train_images_tensor, train_labels_tensor)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
-num_classes = 100
+num_classes = len(np.unique(train_labels))
 model = MyModel(num_classes)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -71,6 +71,7 @@ with torch.no_grad():
         _, predicted = torch.max(outputs, 1)
         test_predictions.append(predicted.cpu().numpy())
 
+test_predictions = np.concatenate(test_predictions)
 predictions_df = pd.DataFrame(test_predictions, columns=["label"])
 predictions_df.index.name = 'id_idx'
 csv_save_path = repository_path + 'test_predictions.csv'
