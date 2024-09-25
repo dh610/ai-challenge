@@ -8,7 +8,7 @@ from sklearn.preprocessing import LabelBinarizer
 from model import MyModel
 import sys
 
-repository_path = '/content/drive/MyDrive/2024-ai-challenge'
+repository_path = '/content/drive/MyDrive/ai-challenge'
 
 train_images = np.load(repository_path + 'data/trainset.npy')
 train_labels = np.load(repository_path + 'data/trainlabel.npy')
