@@ -32,11 +32,9 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-'''
 if (device != "cuda"):
     print("CUDA is disabled")
     sys.exit()
-'''
 model.to(device)
 
 num_epochs = 10
