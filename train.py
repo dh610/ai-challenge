@@ -45,7 +45,7 @@ model.train()
 
 for epoch in range(num_epochs):
     running_loss = 0.0
-    for images, labels in train_loader:
+    for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device)
 
         outputs = model(images)
