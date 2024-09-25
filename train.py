@@ -69,6 +69,7 @@ test_loader = DataLoader(test_images_tensor, batch_size=16, shuffle=False)
 test_predictions = []
 with torch.no_grad():
     for images in test_loader:
+        images = images.permute(0, 3, 1, 2)
         images = images.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs, 1)
