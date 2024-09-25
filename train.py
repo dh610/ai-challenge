@@ -42,7 +42,7 @@ for epoch in range(num_epochs):
     running_loss = 0.0
     for images, labels in tqdm(train_loader):
         images = images.permute(0, 3, 1, 2)
-        images, labels = images.to(device), labels.to(device).long
+        images, labels = images.to(device), labels.to(device).long()
 
         outputs = model(images)
         loss = criterion(outputs, labels)
