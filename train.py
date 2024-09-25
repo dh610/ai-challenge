@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from tqdm import tqdm
+import pandas as pd
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
@@ -13,10 +14,6 @@ repository_path = '/content/drive/MyDrive/ai-challenge/'
 train_images = np.load(repository_path + 'data/trainset.npy')
 train_labels = np.load(repository_path + 'data/trainlabel.npy')
 test_images = np.load(repository_path + 'data/testset.npy')
-
-# One-hot encoding
-lb = LabelBinarizer()
-train_labels = lb.fit_transform(train_labels)
 
 train_images_tensor = torch.tensor(train_images).float()
 train_labels_tensor = torch.tensor(train_labels).float()
@@ -75,5 +72,8 @@ with torch.no_grad():
         _, predicted = torch.max(outputs, 1)
         test_predictions.append(predicted.cpu().numpy())
 
-test_predictions = np.concatenate(test_predictions)
-np.save(repository_path + 'test_predictions.npy', test_predictions)
+predictions_df = pd.DataFrame(test_predictions, columns=["label"])
+predictions_df.index.name = 'id_idx'
+csv_save_path = repository_path + 'test_predictions.csv'
+predictions_df.to_csv(csv_save_path)
+print(f"Test predictions saved to '{csv_save_path}'.")
