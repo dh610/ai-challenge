@@ -59,21 +59,3 @@ for epoch in range(num_epochs):
 
 torch.save(model.state_dict(), model_save_path)
 print(f"Model weights saved to {model_save_path}.")
-
-model.eval()
-test_loader = DataLoader(test_images_tensor, batch_size=16, shuffle=False)
-test_predictions = []
-with torch.no_grad():
-    for images in test_loader:
-        images = images.permute(0, 3, 1, 2)
-        images = images.to(device)
-        outputs = model(images)
-        _, predicted = torch.max(outputs, 1)
-        test_predictions.append(predicted.cpu().numpy())
-
-test_predictions = np.concatenate(test_predictions)
-predictions_df = pd.DataFrame(test_predictions, columns=["label"])
-predictions_df.index.name = 'id_idx'
-csv_save_path = repository_path + 'test_predictions.csv'
-predictions_df.to_csv(csv_save_path)
-print(f"Test predictions saved to '{csv_save_path}'.")
