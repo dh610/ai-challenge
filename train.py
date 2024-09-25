@@ -22,7 +22,7 @@ test_images_tensor = torch.tensor(test_images).float()
 train_dataset = TensorDataset(train_images_tensor, train_labels_tensor)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
-num_classes = len(lb.classes_)
+num_classes = 100
 model = MyModel(num_classes)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
