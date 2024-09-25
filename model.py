@@ -10,7 +10,7 @@ class MyModel(nn.Module):
         self.conv5 = nn.Conv2d(16, 8, kernel_size=3, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
         self.relu = nn.ReLU()
-        self.fc1 = nn.Linear(8 * 8 * 8, 32)
+        self.fc1 = nn.Linear(8 * 32 * 32, 32)
         self.fc2 = nn.Linear(32, num_classes)
         self.dropout = nn.Dropout()
 
@@ -20,7 +20,7 @@ class MyModel(nn.Module):
         x = self.pool(self.relu(self.conv3(x)))
         x = self.pool(self.relu(self.conv4(x)))
         x = self.pool(self.relu(self.conv5(x)))
-        x = x.view(-1, 8 * 8 * 8)
+        x = x.view(-1, 8 * 32 * 32)
         x = self.relu(self.fc1(x))
         x = self.fc2(x)
         return x
