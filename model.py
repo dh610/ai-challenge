@@ -8,7 +8,7 @@ class MyModel(nn.Module):
         self.conv3 = nn.Conv2d(32, 32, kernel_size=3, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
         self.relu = nn.ReLU()
-        self.fc1 = nn.Linear(16 * 8 * 8, 32)
+        self.fc1 = nn.Linear(32 * 4 * 4, 32)
         self.fc2 = nn.Linear(32, num_classes)
         self.dropout = nn.Dropout()
 
@@ -20,7 +20,7 @@ class MyModel(nn.Module):
         print(f"After conv2: {x.shape}")
         x = self.pool(self.relu(self.conv3(x)))
         print(f"After conv3: {x.shape}")
-        x = x.view(x.size(0), -1)
+        x = x.reshape(-1, 32 * 4 * 4)
         x = self.relu(self.fc1(x))
         x = self.fc2(x)
         return x
