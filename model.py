@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-class CNNModel(nn.Module):
+class MyModel(nn.Module):
     def __init__(self, num_classes):
         super(CNNModel, self).__init__()
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, padding=1)
@@ -12,6 +12,7 @@ class CNNModel(nn.Module):
         self.relu = nn.ReLU()
         self.fc1 = nn.Linear(8 * 8 * 8, 32)
         self.fc2 = nn.Linear(32, num_classes)
+        self.dropout = nn.Dropout()
 
     def forward(self, x):
         x = self.pool(self.relu(self.conv1(x)))
