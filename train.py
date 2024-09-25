@@ -1,11 +1,10 @@
 import numpy as np
 import torch
-from tqdm import tqdm
 import pandas as pd
+from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from sklearn.preprocessing import LabelBinarizer
 from model import MyModel
 import sys
 
@@ -46,7 +45,7 @@ for epoch in range(num_epochs):
         images, labels = images.to(device), labels.to(device)
 
         outputs = model(images)
-        loss = criterion(outputs, torch.max(labels, 1)[1])
+        loss = criterion(outputs, labels)
 
         optimizer.zero_grad()
         loss.backward()
