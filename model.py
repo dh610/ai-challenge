@@ -13,10 +13,13 @@ class MyModel(nn.Module):
         self.dropout = nn.Dropout()
 
     def forward(self, x):
+        print(f"Before conv1: {x.shape}")
         x = self.pool(self.relu(self.conv1(x)))
+        print(f"After conv1: {x.shape}")
         x = self.pool(self.relu(self.conv2(x)))
+        print(f"After conv2: {x.shape}")
         x = self.pool(self.relu(self.conv3(x)))
-        print(x.size(0))
+        print(f"After conv3: {x.shape}")
         x = x.view(x.size(0), -1)
         x = self.relu(self.fc1(x))
         x = self.fc2(x)
