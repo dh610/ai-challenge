@@ -20,6 +20,7 @@ std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
 # 데이터 증강 및 정규화
 augmentation = transforms.Compose([
     transforms.ToTensor(),  # [0, 255] → [0, 1]
+    transforms.RandomHorizontalFlip(p=0.5),
     transforms.Normalize(mean=mean, std=std),
 ])
 

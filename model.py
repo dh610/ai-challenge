@@ -76,3 +76,29 @@ class MyModel(nn.Module):
         x = self.conv5_x(x)
         x = self.avg_pool(x)
         return x.view(x.size(0), -1)
+
+
+class MobileNetUnder100K(nn.Module):
+    def __init__(self, num_classes=100):
+        super(MobileNetUnder100K, self).__init__()
+        self.features = nn.Sequential(
+            DSC(3, 32, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            DSC(32, 64, stride=2),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            DSC(64, 128, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+            DSC(128, 256, stride=2),
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+            DSC(256, num_classes)
+        )
+        self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.avg_pool(x)
+        return x.view(x.size(0), -1)  # (batch_size, num_classes)
