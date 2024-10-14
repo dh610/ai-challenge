@@ -5,7 +5,7 @@ from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from model import MyModel
+from model import MyModel, BasicBlock
 import sys
 
 repository_path = '/content/drive/MyDrive/ai-challenge/'
@@ -22,7 +22,7 @@ train_dataset = TensorDataset(train_images_tensor, train_labels_tensor)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
 num_classes = len(np.unique(train_labels))
-model = MyModel([2, 2, 1, 1], num_classes)
+model = MyModel(BasicBlock, [2, 2, 1, 1], num_classes)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=1000)
