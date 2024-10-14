@@ -71,6 +71,7 @@ num_classes = len(np.unique(train_labels))
 model = MyModel(BasicBlock, [2, 2, 1, 1], num_classes)
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
+sys.exit(0)
 model, _ = load_latest_ckpt(model, model_save_path)
 
 if not torch.cuda.is_available():
