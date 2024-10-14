@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from torchvision import transforms
 
 from model import MyModel, BasicBlock, BottleNeck
-from utils import load_latest_ckpt, AugmentedDataset
+from utils import AugmentedDataset
 import sys
 
 # 데이터 로드
@@ -23,24 +23,22 @@ augmentation = transforms.Compose([
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
-    transforms.RandomCrop(32, padding=4),
+    transforms.RandomCrop(32, padding=2),
     transforms.ToTensor(),  # [0, 255] → [0, 1]
     transforms.Normalize(mean=mean, std=std),
 ])
 
 # AugmentedDataset 클래스 정의
 train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
-train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
 model = MyModel(BottleNeck, [2, 4, 6, 1], num_classes)
-model, start_epochs= load_latest_ckpt(model, 'weight')
-print('Start at', start_epochs)
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=500)
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
@@ -48,12 +46,14 @@ if not torch.cuda.is_available():
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-num_epochs = start_epochs + 100
+num_epochs = 500
 model_save_path = "weight/epoch_"
 
 model.train()
+early_stopping_cnt = 0
 
-for epoch in range(start_epochs, num_epochs):
+for epoch in range(num_epochs):
+    prev_loss = 10.0
     running_loss = 0.0
     running_correct = 0
     total_samples = 0
@@ -75,6 +75,9 @@ for epoch in range(start_epochs, num_epochs):
 
     scheduler.step()
     train_loss =  running_loss / len(train_loader)
+    if train_loss < prev_loss:
+        early_stopping_cnt += 1
+    prev_loss = train_loss
     train_accuracy = running_correct / total_samples
     print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}")
 
@@ -82,4 +85,5 @@ for epoch in range(start_epochs, num_epochs):
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
+
 
