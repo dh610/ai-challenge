@@ -14,11 +14,10 @@ train_images = np.load('data/trainset.npy')
 train_labels = np.load('data/trainlabel.npy')
 test_images = np.load('data/testset.npy')
 
-tensorTranslate = transforms.ToTensor()
-
-# Tensor 변환
-train_images_tensor = tensorTranslate(train_images)
+train_images_tensor = torch.tensor(train_images).permute(0, 3, 1, 2).float()  # (N, C, H, W)
 train_labels_tensor = torch.tensor(train_labels).long()
+
+train_images_tensor /= 255.0
 
 mean = [129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0]  # [0, 1]
 std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
@@ -45,14 +44,8 @@ class AugmentedDataset(TensorDataset):
 
     def __getitem__(self, index):
         image, label = self.images[index], self.labels[index]
-        image = image.numpy()
-        image = torch.from_numpy(image).float()
-
-        print(f"Image shape before transform: {image.shape}")
-        print(f"Image shape and range before transform: {image.shape}, max: {image.max()}, min: {image.min()}")
         if self.transform:
             image = self.transform(image)
-        print(f"Image after transform: {image.shape if isinstance(image, torch.Tensor) else image}")
         return image, label
 
 train_dataset = AugmentedDataset(train_images_tensor, train_labels_tensor, transform=augmentation)
