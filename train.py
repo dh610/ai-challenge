@@ -9,22 +9,30 @@ from torchvision import transforms
 from model import MyModel, BasicBlock
 import sys
 
+# 데이터 로드
 train_images = np.load('data/trainset.npy')
 train_labels = np.load('data/trainlabel.npy')
 test_images = np.load('data/testset.npy')
 
+# Tensor 변환
 train_images_tensor = torch.tensor(train_images).float()
 train_labels_tensor = torch.tensor(train_labels).float()
 test_images_tensor = torch.tensor(test_images).float()
 
+mean = [129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0]  # [0, 1]
+std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
+
+# 데이터 증강 및 정규화
 augmentation = transforms.Compose([
     transforms.ToPILImage(),
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
-    transforms.ToTensor(),
+    transforms.ToTensor(),  # [0, 255] → [0, 1]로 변환
+    transforms.Normalize(mean=mean, std=std)  # 정규화
 ])
 
+# AugmentedDataset 클래스 정의
 class AugmentedDataset(TensorDataset):
     def __init__(self, images, labels, transform=None):
         super(AugmentedDataset, self).__init__()
@@ -66,7 +74,6 @@ for epoch in range(num_epochs):
     running_correct = 0
     total_samples = 0
     for images, labels in tqdm(train_loader):
-        images = images.permute(0, 3, 1, 2)
         images, labels = images.to(device), labels.to(device).long()
 
         outputs = model(images)
