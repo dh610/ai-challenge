@@ -38,11 +38,12 @@ class AugmentedDataset(TensorDataset):
 
     def __getitem__(self, index):
         image, label = self.images[index], self.labels[index]
-        image = image.permute(1, 2, 0)  # (C, H, W) -> (H, W, C)
+        image = image.permute(2, 0, 1)
         if self.transform:
             image = self.transform(image)
         return image, label
 
+# 데이터셋 생성
 train_dataset = AugmentedDataset(train_images_tensor, train_labels_tensor, transform=augmentation)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
@@ -68,6 +69,7 @@ for epoch in range(num_epochs):
     running_correct = 0
     total_samples = 0
     for images, labels in tqdm(train_loader):
+        images = images.permute(0, 3, 1, 2)
         images, labels = images.to(device), labels.to(device).long()
 
         outputs = model(images)
