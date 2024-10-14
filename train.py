@@ -1,11 +1,12 @@
 import numpy as np
 import torch
-import pandas as pd
 from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision import transforms
+from PIL import Image
+
 from model import MyModel, BasicBlock
 import sys
 
@@ -39,6 +40,7 @@ class AugmentedDataset(TensorDataset):
 
     def __getitem__(self, index):
         image, label = self.images[index], self.labels[index]
+        image = Image.fromarray(image.astype(np.uint8))
         if self.transform:
             image = self.transform(image)
         return image, label
