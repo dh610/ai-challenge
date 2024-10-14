@@ -1,4 +1,42 @@
+import torch
 import torch.nn as nn
+
+class MobileConv(nn.Module):
+    def __init__(self, in_channels, out_channels, stride=1, kernel_size=3, padding=0, bias=False):
+        super(MobileConv, self).__init__()
+
+    def forward(self, x):
+        return x
+
+class BottleNeck(nn.Module):
+
+    expansion = 4
+
+    def __init__(self, conv, in_channels, out_channels, stride=1):
+        super.__init__()
+        self.residual_function = nn.Sequential(
+            conv(in_channels, out_channels, kernel_size=1, bias=False),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(),
+            conv(out_channels, out_channels, stride=stride, padding=1, bias=False),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(),
+            conv(out_channels, out_channels * BottleNeck.expansion, kernel_size=1, bias=False),
+            nn.BatchNorm2d(out_channels * BottleNeck.expansion),
+        )
+
+        self.relu = nn.ReLU()
+        self.shortcut = nn.Sequential()
+
+        if stride != 1 or in_channels != out_channels * BottleNeck.expansion:
+            self.shortcut = nn.Sequential(
+                conv(in_channels, out_channels * BottleNeck.expansion, stride=stride, kernel_size=1, bias=False),
+                nn.BatchNorm2d(out_channels * BottleNeck.expansion),
+            )
+
+    def forward(self, x):
+        x = self.residual_function(x) + self.shortcut(x)
+        return self.relu(x)
 
 class MyModel(nn.Module):
     def __init__(self, num_classes):
