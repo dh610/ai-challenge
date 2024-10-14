@@ -39,8 +39,6 @@ dummy_labels = np.zeros(len(test_images))
 
 test_transform = transforms.Compose([
     transforms.ToTensor(),  # [0, 255] → [0, 1]
-    transforms.Normalize(mean=[129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0],
-                         std=[68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0])
 ])
 
 class TestDataset(TensorDataset):
