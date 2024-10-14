@@ -14,10 +14,11 @@ train_images = np.load('data/trainset.npy')
 train_labels = np.load('data/trainlabel.npy')
 test_images = np.load('data/testset.npy')
 
+tensorTranslate = transforms.ToTensor()
+
 # Tensor 변환
-train_images_tensor = torch.tensor(train_images).float()
-train_labels_tensor = torch.tensor(train_labels).float()
-test_images_tensor = torch.tensor(test_images).float()
+train_images_tensor = tensorTranslate(train_images)
+train_labels_tensor = torch.tensor(train_labels).long()
 
 mean = [129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0]  # [0, 1]
 std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
@@ -28,7 +29,6 @@ augmentation = transforms.Compose([
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
-    transforms.ToTensor(),  # [0, 255] → [0, 1]로 변환
     transforms.Normalize(mean=mean, std=std)  # 정규화
 ])
 
