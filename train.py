@@ -17,8 +17,6 @@ train_images_tensor = torch.tensor(train_images).float()
 train_labels_tensor = torch.tensor(train_labels).float()
 test_images_tensor = torch.tensor(test_images).float()
 
-train_images_tensor = train_images_tensor.permute(0, 3, 1, 2)
-
 augmentation = transforms.Compose([
     transforms.ToPILImage(),
     transforms.RandomHorizontalFlip(p=0.5),
@@ -39,7 +37,6 @@ class AugmentedDataset(TensorDataset):
 
     def __getitem__(self, index):
         image, label = self.images[index], self.labels[index]
-        image = image.permute(2, 0, 1)
         if self.transform:
             image = self.transform(image)
         return image, label
