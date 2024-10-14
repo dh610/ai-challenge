@@ -5,9 +5,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision import transforms
-from PIL import Image
 
 from model import MyModel, BasicBlock, BottleNeck
+from utils import load_latest_ckpt, AugmentedDataset
 import sys
 
 # 데이터 로드
@@ -29,32 +29,17 @@ augmentation = transforms.Compose([
 ])
 
 # AugmentedDataset 클래스 정의
-class AugmentedDataset(TensorDataset):
-    def __init__(self, images, labels, transform=None):
-        super(AugmentedDataset, self).__init__()
-        self.images = images
-        self.labels = labels
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.images)
-
-    def __getitem__(self, index):
-        image, label = self.images[index], self.labels[index]
-        image = Image.fromarray(image.astype(np.uint8))
-        if self.transform:
-            image = self.transform(image)
-        return image, label
-
 train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
 model = MyModel(BottleNeck, [2, 4, 6, 1], num_classes)
+model, start_epochs= load_latest_ckpt(model, 'weight')
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=300)
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
@@ -62,12 +47,12 @@ if not torch.cuda.is_available():
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-num_epochs = 300
+num_epochs = start_epochs + 100
 model_save_path = "weight/epoch_"
 
 model.train()
 
-for epoch in range(num_epochs):
+for epoch in range(start_epochs, num_epochs):
     running_loss = 0.0
     running_correct = 0
     total_samples = 0
