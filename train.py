@@ -17,6 +17,9 @@ train_images_tensor = torch.tensor(train_images).float()
 train_labels_tensor = torch.tensor(train_labels).float()
 test_images_tensor = torch.tensor(test_images).float()
 
+print(test_images_tensor.shape)
+sys.exit(0)
+
 augmentation = transforms.Compose([
     transforms.ToPILImage(),
     transforms.RandomHorizontalFlip(p=0.5),
