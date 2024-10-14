@@ -80,7 +80,7 @@ model.to(device)
 model.eval()
 test_predictions = []
 with torch.no_grad():
-    for images in test_loader:
+    for images, _ in test_loader:
         images = images.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs, 1)
