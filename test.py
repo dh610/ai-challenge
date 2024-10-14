@@ -10,7 +10,7 @@ import sys
 import os
 
 def load_latest_ckpt(net, ckpt_path):
-    checkpoint_files = [f for f in os.listdir(ckpt_path) if f.startswith('model_weights') and f.endswith('.pth')]
+    checkpoint_files = [f for f in os.listdir(ckpt_path) if f.startswith('epoch_') and f.endswith('.pth')]
 
     if not checkpoint_files:
         print("No checkpoint found.")
@@ -19,7 +19,7 @@ def load_latest_ckpt(net, ckpt_path):
     epoch_values = [int(f.split('_')[1].split('.')[0]) for f in checkpoint_files]
 
     latest_epoch = max(epoch_values)
-    latest_checkpoint = f'model_weights{latest_epoch}.pth'
+    latest_checkpoint = f'epoch_{latest_epoch}.pth'
 
     print(f"Loading checkpoint: {latest_checkpoint}")
 

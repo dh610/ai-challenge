@@ -34,7 +34,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 num_epochs = 1000
-model_save_path = repository_path + "weight/model_weights"
+model_save_path = repository_path + "weight/epoch_"
 
 model.train()
 
