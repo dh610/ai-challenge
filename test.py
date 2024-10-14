@@ -5,7 +5,7 @@ from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from model import MyModel
+from model import MyModel, BasicBlock
 import sys
 import os
 
@@ -39,7 +39,7 @@ test_images_tensor = torch.tensor(test_images).float()
 model_save_path = "weight/"
 
 num_classes = len(np.unique(train_labels))
-model = MyModel(num_classes)
+model = MyModel(BasicBlock, [2, 2, 1, 1], num_classes)
 model, _ = load_latest_ckpt(model, model_save_path)
 
 if not torch.cuda.is_available():
