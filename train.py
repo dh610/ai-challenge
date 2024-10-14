@@ -45,6 +45,9 @@ class AugmentedDataset(TensorDataset):
 
     def __getitem__(self, index):
         image, label = self.images[index], self.labels[index]
+        image = image.numpy()
+        image = torch.from_numpy(image).float()
+
         print(f"Image shape before transform: {image.shape}")
         if self.transform:
             image = self.transform(image)
