@@ -37,7 +37,8 @@ class AugmentedDataset(TensorDataset):
 
     def __getitem__(self, index):
         image, label = self.images[index], self.labels[index]
-        print(f"Before transform: {image.shape}")
+        print(f"Before transform: {image.shape}, dtype: {image.dtype}, max: {image.max()}, min: {image.min()}")
+        sys.exit(0)
         if self.transform:
             image = self.transform(image)
         return image, label
