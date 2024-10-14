@@ -43,7 +43,7 @@ class AugmentedDataset(TensorDataset):
             image = self.transform(image)
         return image, label
 
-train_dataset = AugmentedDataset(train_images_tensor, train_labels_tensor, transform=augmentation)
+train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
 num_classes = len(np.unique(train_labels))
