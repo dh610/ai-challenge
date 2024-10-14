@@ -35,6 +35,7 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_worker
 num_classes = len(np.unique(train_labels))
 model = MyModel(BottleNeck, [2, 4, 6, 1], num_classes)
 model, start_epochs= load_latest_ckpt(model, 'weight')
+print('Start at', start_epochs)
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 criterion = nn.CrossEntropyLoss()
