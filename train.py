@@ -25,7 +25,6 @@ augmentation = transforms.Compose([
     transforms.ToTensor(),
 ])
 
-# 커스텀 Dataset 정의: Augmentation 적용
 class AugmentedDataset(TensorDataset):
     def __init__(self, images, labels, transform=None):
         super(AugmentedDataset, self).__init__()
@@ -38,12 +37,13 @@ class AugmentedDataset(TensorDataset):
 
     def __getitem__(self, index):
         image, label = self.images[index], self.labels[index]
+        print(f"Original shape: {image.shape}")
+        sys.exit(0)
         image = image.permute(2, 0, 1)
         if self.transform:
             image = self.transform(image)
         return image, label
 
-# 데이터셋 생성
 train_dataset = AugmentedDataset(train_images_tensor, train_labels_tensor, transform=augmentation)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
