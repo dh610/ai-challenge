@@ -7,18 +7,40 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from model import MyModel
 import sys
+import os
 
-repository_path = '/content/drive/MyDrive/ai-challenge/'
-train_labels = np.load(repository_path + 'data/trainlabel.npy')
+def load_latest_ckpt(net, ckpt_path):
+    checkpoint_files = [f for f in os.listdir(ckpt_path) if f.startswith('model_weights') and f.endswith('.pth')]
 
-test_images = np.load(repository_path + 'data/testset.npy')
+    if not checkpoint_files:
+        print("No checkpoint found.")
+        return net, 0
+
+    epoch_values = [int(f.split('_')[1].split('.')[0]) for f in checkpoint_files]
+
+    latest_epoch = max(epoch_values)
+    latest_checkpoint = f'model_weights{latest_epoch}.pth'
+
+    print(f"Loading checkpoint: {latest_checkpoint}")
+
+    checkpoint = torch.load(os.path.join(ckpt_path, latest_checkpoint))
+    print(checkpoint.keys())
+
+    checkpoint = torch.load(os.path.join(ckpt_path, latest_checkpoint))
+    net.load_state_dict(checkpoint)
+
+    return net, latest_epoch 
+
+train_labels = np.load('data/trainlabel.npy')
+
+test_images = np.load('data/testset.npy')
 test_images_tensor = torch.tensor(test_images).float()
 
-model_save_path = repository_path + "weight/final_model_weights.pth"
+model_save_path = "weight/"
 
 num_classes = len(np.unique(train_labels))
 model = MyModel(num_classes)
-model.load_state_dict(torch.load(model_save_path))
+model, _ = load_latest_ckpt(model, model_save_path)
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
@@ -40,6 +62,6 @@ with torch.no_grad():
 test_predictions = np.concatenate(test_predictions)
 predictions_df = pd.DataFrame(test_predictions, columns=["label"])
 predictions_df.index.name = 'id_idx'
-csv_save_path = repository_path + 'test_predictions.csv'
+csv_save_path = 'result/test_predictions.csv'
 predictions_df.to_csv(csv_save_path)
 print(f"Test predictions saved to '{csv_save_path}'.")
