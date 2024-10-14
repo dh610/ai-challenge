@@ -17,8 +17,7 @@ train_images_tensor = torch.tensor(train_images).float()
 train_labels_tensor = torch.tensor(train_labels).float()
 test_images_tensor = torch.tensor(test_images).float()
 
-print(f"Train images shape: {train_images_tensor.shape}")
-sys.exit(0)
+train_images_tensor = train_images_tensor.permute(0, 3, 1, 2)
 
 augmentation = transforms.Compose([
     transforms.ToPILImage(),
