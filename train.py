@@ -64,7 +64,7 @@ for epoch in range(num_epochs):
     train_accuracy = running_correct / total_samples
     print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}")
 
-    if (epoch+1) % 50 == 0:
+    if (epoch+1) % 20 == 0:
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")

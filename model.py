@@ -40,38 +40,6 @@ class BasicBlock(nn.Module):
         x = self.residual_function(x) + self.shortcut(x)
         return self.relu(x)
 
-'''
-class BottleNeck(nn.Module):
-
-    expansion = 4
-
-    def __init__(self, in_channels, out_channels, stride=1):
-        super.__init__()
-        self.residual_function = nn.Sequential(
-            DSC(in_channels=in_channels, out_channels=out_channels, kernel_size=1, bias=False),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(),
-            DSC(in_channels=out_channels, out_channels=out_channels, stride=stride, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(),
-            DSC(in_channels=out_channels, out_channels=out_channels * BottleNeck.expansion, kernel_size=1, bias=False),
-            nn.BatchNorm2d(out_channels * BottleNeck.expansion),
-        )
-
-        self.relu = nn.ReLU()
-        self.shortcut = nn.Sequential()
-
-        if stride != 1 or in_channels != out_channels * BottleNeck.expansion:
-            self.shortcut = nn.Sequential(
-                DSC(in_channels=in_channels, out_channels=out_channels * BottleNeck.expansion, stride=stride, kernel_size=1, bias=False),
-                nn.BatchNorm2d(out_channels * BottleNeck.expansion),
-            )
-
-    def forward(self, x):
-        x = self.residual_function(x) + self.shortcut(x)
-        return self.relu(x)
-'''
-
 class MyModel(nn.Module):
     def __init__(self, block, num_block, num_classes=100):
         super(MyModel, self).__init__()
