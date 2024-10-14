@@ -2,6 +2,7 @@ import os
 import torch
 from torch.utils.data import TensorDataset
 from PIL import Image
+import numpy as np
 
 class AugmentedDataset(TensorDataset):
     def __init__(self, images, labels, transform=None):
