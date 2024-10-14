@@ -49,6 +49,7 @@ class AugmentedDataset(TensorDataset):
         image = torch.from_numpy(image).float()
 
         print(f"Image shape before transform: {image.shape}")
+        print(f"Image shape and range before transform: {image.shape}, max: {image.max()}, min: {image.min()}")
         if self.transform:
             image = self.transform(image)
         print(f"Image after transform: {image.shape if isinstance(image, torch.Tensor) else image}")
