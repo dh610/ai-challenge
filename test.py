@@ -5,6 +5,7 @@ from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
+from torchvision import transforms
 from model import MyModel, BasicBlock
 import sys
 import os
@@ -32,13 +33,39 @@ def load_latest_ckpt(net, ckpt_path):
     return net, latest_epoch 
 
 train_labels = np.load('data/trainlabel.npy')
-
 test_images = np.load('data/testset.npy')
-test_images_tensor = torch.tensor(test_images).float()
+
+test_transform = transforms.Compose([
+    transforms.ToTensor(),  # [0, 255] → [0, 1]
+    transforms.Normalize(mean=[129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0],
+                         std=[68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0])
+])
+
+class TestDataset(TensorDataset):
+    def __init__(self, images, labels, transform=None):
+        super(TestDataset, self).__init__()
+        self.images = images
+        self.labels = labels
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, index):
+        image, label = self.images[index], self.labels[index]
+
+        # Transform 적용
+        if self.transform:
+            image = self.transform(image)
+
+        return image, label
+
+num_classes = len(np.unique(train_labels))
+test_dataset = TestDataset(test_images, num_classes, transform=test_transform)
+test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
 model_save_path = "weight/"
 
-num_classes = len(np.unique(train_labels))
 model = MyModel(BasicBlock, [2, 2, 1, 1], num_classes)
 model, _ = load_latest_ckpt(model, model_save_path)
 
@@ -49,11 +76,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 model.eval()
-test_loader = DataLoader(test_images_tensor, batch_size=16, shuffle=False)
 test_predictions = []
 with torch.no_grad():
     for images in test_loader:
-        images = images.permute(0, 3, 1, 2)
         images = images.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs, 1)
