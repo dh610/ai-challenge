@@ -54,7 +54,7 @@ model = MyModel(BottleNeck, [2, 4, 6, 1], num_classes)
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=300)
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
