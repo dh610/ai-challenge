@@ -51,6 +51,7 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_worker
 
 num_classes = len(np.unique(train_labels))
 model = MyModel(BasicBlock, [2, 2, 1, 1], num_classes)
+total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
