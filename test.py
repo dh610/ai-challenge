@@ -35,6 +35,8 @@ def load_latest_ckpt(net, ckpt_path):
 train_labels = np.load('data/trainlabel.npy')
 test_images = np.load('data/testset.npy')
 
+dummy_labels = np.zeros(len(test_images))
+
 test_transform = transforms.Compose([
     transforms.ToTensor(),  # [0, 255] → [0, 1]
     transforms.Normalize(mean=[129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0],
@@ -60,12 +62,12 @@ class TestDataset(TensorDataset):
 
         return image, label
 
-num_classes = len(np.unique(train_labels))
-test_dataset = TestDataset(test_images, num_classes, transform=test_transform)
+test_dataset = TestDataset(test_images, dummy_labels, transform=test_transform)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
 model_save_path = "weight/"
 
+num_classes = len(np.unique(train_labels))
 model = MyModel(BasicBlock, [2, 2, 1, 1], num_classes)
 model, _ = load_latest_ckpt(model, model_save_path)
 
