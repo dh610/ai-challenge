@@ -23,17 +23,6 @@ class CBR(nn.Module):
     def forward(self, x):
         return self.seq(x)
 
-class MyNet(nn.Module):
-    def __init__(self):
-        super(MyNet, self).__init__()
-        self.network = nn.Sequential(
-            CBR(3, 64, 3, padding=1)
-        )
-
-    def forward(self, x):
-        return x
-
-    
 class BasicBlock(nn.Module):
 
     expansion = 1
