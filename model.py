@@ -11,18 +11,6 @@ class DSC(nn.Module):
         x = self.depthwise(x)
         return self.pointwise(x)
 
-class CBR(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=0, bias=False):
-        super(CBR, self).__init__()
-        self.seq = nn.Sequential(
-            DSC(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, stride=stride, padding=padding, bias=bias),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True),
-        )
-
-    def forward(self, x):
-        return self.seq(x)
-
 class BasicBlock(nn.Module):
 
     expansion = 1

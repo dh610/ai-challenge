@@ -62,19 +62,8 @@ for epoch in range(num_epochs):
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
 
-        prob = random.random()
-        if prob < 0.6:
-            if random.random() < 0.5:
-                images, targets_a, targets_b, lam = mixup_data(device, images, labels)
-            else:
-                images, targets_a, targets_b, lam = cutmix_data(device, images, labels)
-
-            outputs = model(images)
-            loss = lam * criterion(outputs, targets_a) + (1 - lam) * criterion(outputs, targets_b)
-
-        else:
-            outputs = model(images)
-            loss = criterion(outputs, labels)
+        outputs = model(images)
+        loss = criterion(outputs, labels)
 
         outputs = model(images)
         loss = criterion(outputs, labels)
