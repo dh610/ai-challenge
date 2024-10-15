@@ -29,7 +29,7 @@ num_classes = len(np.unique(train_labels))
 model = MyNet()
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
-summary(MyNet, (3, 32, 32))
+summary(model, (3, 32, 32))
 sys.exit(0)
 model, _ = load_latest_ckpt(model, model_save_path)
 
