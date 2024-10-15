@@ -15,15 +15,15 @@ class BasicBlock(nn.Module):
 
     expansion = 1
 
-    def __init__(self, in_channels, out_channels, stride=1):
+    def __init__(self, in_channels, out_channels, stride=1, groups=8):
         super(BasicBlock, self).__init__()
         
         self.residual_function = nn.Sequential(
             DSC(in_channels=in_channels, out_channels=out_channels, kernel_size=3, stride=stride, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.GroupNorm(groups, out_channels),
             nn.ReLU(inplace=True),
             DSC(in_channels=out_channels, out_channels=out_channels, kernel_size=3, stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
+            nn.GroupNorm(groups, out_channels),
         )
 
         self.relu = nn.ReLU(inplace=True)
@@ -32,7 +32,7 @@ class BasicBlock(nn.Module):
         if stride != 1 or in_channels != out_channels:
             self.shortcut = nn.Sequential(
                 DSC(in_channels=in_channels, out_channels=out_channels, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(out_channels)
+                nn.GroupNorm(groups, out_channels),
             )
 
     def forward(self, x):
@@ -40,13 +40,13 @@ class BasicBlock(nn.Module):
         return self.relu(x)
 
 class MyModel(nn.Module):
-    def __init__(self, block, num_block, num_classes=100):
+    def __init__(self, block, num_block, num_classes=100, groups=8):
         super(MyModel, self).__init__()
         self.in_channels = 16
 
         self.conv1 = nn.Sequential(
             DSC(in_channels=3, out_channels=16, kernel_size=7, stride=2, padding=3, bias=False),
-            nn.BatchNorm2d(16),
+            nn.GroupNorm(groups, 16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
