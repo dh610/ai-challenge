@@ -147,7 +147,7 @@ class MyNet(nn.Module):
 
         # Stacked ShuffleNetV2 blocks for different stages
         self.stage2 = self._make_stage(out_channels[0], out_channels[1], 5)
-        self.stage3 = self._make_stage(out_channels[1], out_channels[2], 10)
+        self.stage3 = self._make_stage(out_channels[1], out_channels[2], 11)
         self.stage4 = self._make_stage(out_channels[2], out_channels[3], 5)
 
         # Final 1x1 convolution layer before classification
