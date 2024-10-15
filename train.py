@@ -39,7 +39,7 @@ model = MyModel(BasicBlock, [2, 2, 1, 1], num_classes)
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.AdamW(model.parameters(), lr=0.01, weight_decay=0.01)
+optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.01)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=500)
 
 if not torch.cuda.is_available():
@@ -55,7 +55,7 @@ model.train()
 early_stopping_cnt = 0
 
 for epoch in range(num_epochs):
-    prev_loss = 10.0
+    prev_loss = float('inf')
     running_loss = 0.0
     running_correct = 0
     total_samples = 0
@@ -97,9 +97,13 @@ for epoch in range(num_epochs):
     train_accuracy = running_correct / total_samples
     print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}")
 
-    if (epoch+1) % 10 == 0:
+    if (epoch+1) % 10 == 0 or early_stopping_cnt >= 50:
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
+
+    if early_stopping_cnt >= 50:
+        print('Early Stopping')
+        break
 
 
