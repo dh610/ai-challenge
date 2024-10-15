@@ -2,7 +2,7 @@ import torch.nn as nn
 
 # Depthwise Separable Convolution
 class DSC(nn.Module):
-    def __init__(self, in_channels, out_channels, stride=1, kernel_size=3, padding=0, bias=False):
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=0, bias=False):
         super(DSC, self).__init__()
         self.depthwise = nn.Conv2d(in_channels, in_channels, kernel_size, stride, padding, groups=in_channels, bias=bias)
         self.pointwise = nn.Conv2d(in_channels, out_channels, 1, bias=bias)
@@ -10,6 +10,28 @@ class DSC(nn.Module):
     def forward(self, x):
         x = self.depthwise(x)
         return self.pointwise(x)
+
+class CBR(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=0, bias=False):
+        super(CBR, self).__init__()
+        self.seq = nn.Sequential(
+            DSC(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, stride=stride, padding=padding, bias=bias),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(inplace=True),
+        )
+
+    def forward(self, x):
+        return self.seq(x)
+
+class MyNet(nn.Module):
+    def __init__(self):
+        super(MyNet, self).__init__()
+        self.network = nn.Sequential(
+            CBR(3, 64, 3, padding=1)
+        )
+
+    def forward(self, x):
+        return x
 
     
 class BasicBlock(nn.Module):
@@ -40,52 +62,21 @@ class BasicBlock(nn.Module):
         x = self.residual_function(x) + self.shortcut(x)
         return self.relu(x)
 
-class BottleNeck(nn.Module):
-
-    expansion = 4
-
-    def __init__(self, in_channels, out_channels, stride=1):
-        super().__init__()
-        self.residual_function = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=1, bias = False),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(),
-            DSC(in_channels=out_channels, out_channels=out_channels, stride=stride, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(),
-            nn.Conv2d(out_channels, out_channels * BottleNeck.expansion, kernel_size = 1, bias = False),
-            nn.BatchNorm2d(out_channels * BottleNeck.expansion),
-        )
-
-        self.relu = nn.ReLU()
-        self.shortcut = nn.Sequential()
-
-        if stride != 1 or in_channels != out_channels * BottleNeck.expansion:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels * BottleNeck.expansion, stride = stride, kernel_size = 1, bias = False),
-                nn.BatchNorm2d(out_channels * BottleNeck.expansion)
-            )
-
-    def forward(self, x):
-        x = self.residual_function(x) + self.shortcut(x)
-        x = self.relu(x)
-        return x
-
 class MyModel(nn.Module):
     def __init__(self, block, num_block, num_classes=100):
         super(MyModel, self).__init__()
-        self.in_channels = 16
+        self.in_channels = 32
 
         self.conv1 = nn.Sequential(
-            DSC(in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1, bias=False),
+            DSC(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1)
         )
 
-        self.conv2_x = self._make_layer(block, 8, num_block[0], 1)
-        self.conv3_x = self._make_layer(block, 16, num_block[1], 2)
-        self.conv4_x = self._make_layer(block, 32, num_block[2], 2)
+        self.conv2_x = self._make_layer(block, 32, num_block[0], 1)
+        self.conv3_x = self._make_layer(block, 32, num_block[1], 2)
+        self.conv4_x = self._make_layer(block, 64, num_block[2], 2)
         self.conv5_x = self._make_layer(block, num_classes // block.expansion, num_block[3], 2)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))

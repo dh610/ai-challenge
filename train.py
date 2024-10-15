@@ -6,7 +6,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision import transforms
 
-from model import MyModel, BasicBlock, BottleNeck
+from model import MyModel, BasicBlock
 from utils import AugmentedDataset
 import sys
 
@@ -33,7 +33,7 @@ train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentat
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
-model = MyModel(BottleNeck, [2, 4, 6, 1], num_classes)
+model = MyModel(BasicBlock, [2, 4, 6, 1], num_classes)
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 criterion = nn.CrossEntropyLoss()
