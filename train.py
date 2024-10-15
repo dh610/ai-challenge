@@ -32,7 +32,7 @@ augmentation = transforms.Compose([
 
 # AugmentedDataset 클래스 정의
 train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
-train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
+train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
 model = MyNet()
