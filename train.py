@@ -40,15 +40,15 @@ total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=500)
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
-    sys.exit
+    sys.exit(1)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-num_epochs = 500
+num_epochs = 100
 model_save_path = "weight/epoch_"
 
 model.train()
@@ -62,7 +62,7 @@ for epoch in range(num_epochs):
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
 
-        if epoch >= 300:
+        if epoch >= 70:
             if random.random() < 0.5:
                 images, targets_a, targets_b, lam = mixup_data(images, labels)
             else:
@@ -93,13 +93,9 @@ for epoch in range(num_epochs):
     train_accuracy = running_correct / total_samples
     print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}")
 
-    if (epoch+1) % 10 == 0 or early_stopping_cnt >= 50:
+    if (epoch+1) % 10 == 0:
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
-
-    if early_stopping_cnt >= 50:
-        print('Early Stopping')
-        break
 
 
