@@ -135,7 +135,7 @@ class MyNet(nn.Module):
     def __init__(self, num_classes=100):
         super(MyNet, self).__init__()
         # Output channels for different model sizes
-        out_channels = (24, 48, 96, 192, num_classes)
+        out_channels = (16, 32, 64, 128, num_classes)
 
         # Initial convolution layer
         self.conv1 = nn.Sequential(
@@ -146,9 +146,9 @@ class MyNet(nn.Module):
         self.maxpool = nn.MaxPool2d(3, 2, 1)  # Max pooling layer
 
         # Stacked ShuffleNetV2 blocks for different stages
-        self.stage2 = self._make_stage(out_channels[0], out_channels[1], 2)
-        self.stage3 = self._make_stage(out_channels[1], out_channels[2], 4)
-        self.stage4 = self._make_stage(out_channels[2], out_channels[3], 2)
+        self.stage2 = self._make_stage(out_channels[0], out_channels[1], 4)
+        self.stage3 = self._make_stage(out_channels[1], out_channels[2], 8)
+        self.stage4 = self._make_stage(out_channels[2], out_channels[3], 4)
 
         # Final 1x1 convolution layer before classification
         self.conv5 = nn.Sequential(
