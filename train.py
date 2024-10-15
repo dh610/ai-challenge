@@ -25,14 +25,13 @@ augmentation = transforms.Compose([
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
-    transforms.RandomCrop(32, padding=2),
     transforms.ToTensor(),  # [0, 255] → [0, 1]
     transforms.Normalize(mean=mean, std=std),
 ])
 
 # AugmentedDataset 클래스 정의
 train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
+train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
 model = MyNet()
@@ -53,7 +52,6 @@ num_epochs = 100
 model_save_path = "weight/epoch_"
 
 model.train()
-early_stopping_cnt = 0
 
 for epoch in range(num_epochs):
     prev_loss = float('inf')
@@ -89,7 +87,7 @@ for epoch in range(num_epochs):
     scheduler.step()
     train_loss =  running_loss / len(train_loader)
     if train_loss < prev_loss:
-        early_stopping_cnt += 1
+        print('Failed to better loss!!!!')
     prev_loss = train_loss
     train_accuracy = running_correct / total_samples
     print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}")

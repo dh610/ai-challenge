@@ -17,15 +17,15 @@ class BasicBlock(nn.Module):
 
     expansion = 1
 
-    def __init__(self, in_channels, out_channels, stride=1, groups=8):
+    def __init__(self, in_channels, out_channels, stride=1):
         super(BasicBlock, self).__init__()
         
         self.residual_function = nn.Sequential(
             DSC(in_channels=in_channels, out_channels=out_channels, kernel_size=3, stride=stride, padding=1, bias=False),
-            nn.GroupNorm(groups, out_channels),
+            nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True),
             DSC(in_channels=out_channels, out_channels=out_channels, kernel_size=3, stride=1, padding=1, bias=False),
-            nn.GroupNorm(groups, out_channels),
+            nn.BatchNorm2d(out_channels),
         )
 
         self.relu = nn.ReLU(inplace=True)
@@ -34,7 +34,7 @@ class BasicBlock(nn.Module):
         if stride != 1 or in_channels != out_channels:
             self.shortcut = nn.Sequential(
                 DSC(in_channels=in_channels, out_channels=out_channels, kernel_size=1, stride=stride, bias=False),
-                nn.GroupNorm(groups, out_channels),
+                nn.BatchNorm(out_channels),
             )
 
     def forward(self, x):
@@ -42,26 +42,22 @@ class BasicBlock(nn.Module):
         return self.relu(x)
 
 class MyModel(nn.Module):
-    def __init__(self, block, num_block, num_classes=100, groups=8):
+    def __init__(self, block, num_classes=100):
         super(MyModel, self).__init__()
         self.in_channels = 16
 
         self.conv1 = nn.Sequential(
             DSC(in_channels=3, out_channels=16, kernel_size=7, stride=2, padding=3, bias=False),
-            nn.GroupNorm(groups, 16),
+            nn.BatchNorm(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
 
-        self.conv2_x = self._make_layer(block, 32, num_block[0], 1)
-        self.conv3_x = self._make_layer(block, 64, num_block[1], 2)
-        self.conv4_x = self._make_layer(block, 128, num_block[2], 2)
+        self.conv2_x = self._make_layer(block, 32, 2, 1)
+        self.conv3_x = self._make_layer(block, 64, 2, 2)
+        self.conv4_x = self._make_layer(block, 128, 1, 2)
+        self.conv5_x = self._make_layer(block, num_classes, 1, 2)
 
-        self.conv5_x = nn.Sequential(
-            DSC(in_channels=128, kernel_size=2, out_channels=num_classes),
-            nn.LayerNorm([num_classes, 1, 1]),
-            nn.ReLU(),
-        )
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
 
     def _make_layer(self, block, out_channels, num_blocks, stride):
