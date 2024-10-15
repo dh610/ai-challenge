@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from torchvision import transforms
 import random
 
-from model import MyModel, BasicBlock
+from model import MyModel, BasicBlock, MyNet
 from utils import AugmentedDataset
 from augmentation import cutmix_data, mixup_data
 import sys
@@ -35,7 +35,7 @@ train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentat
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
-model = MyModel(BasicBlock, [2, 1, 2], num_classes)
+model = MyNet()
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 
