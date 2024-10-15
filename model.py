@@ -56,7 +56,7 @@ class MyModel(nn.Module):
         self.conv4_x = self._make_layer(block, 128, num_block[2], 2)
 
         self.conv5_x = nn.Sequential(
-            DSC(in_channels=128, kernel_size=1, out_channels=num_classes),
+            DSC(in_channels=128, kernel_size=2, out_channels=num_classes),
             nn.LayerNorm([num_classes, 1, 1]),
             nn.ReLU(),
         )
