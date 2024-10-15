@@ -132,15 +132,10 @@ class MyNetBlock(nn.Module):
         return self.channel_shuffle(out)  # Perform channel shuffle
 
 class MyNet(nn.Module):
-    def __init__(self, num_classes=100, model_size='0.5x'):
+    def __init__(self, num_classes=100):
         super(MyNet, self).__init__()
         # Output channels for different model sizes
-        out_channels = {
-            '0.5x': (24, 48, 96, 192, num_classes),
-            '1.0x': (24, 116, 232, 464, 1024),
-            '1.5x': (24, 176, 352, 704, 1024),
-            '2.0x': (24, 244, 488, 976, 2048),
-        }[model_size]
+        out_channels = (24, 48, 96, num_classes, num_classes)
 
         # Initial convolution layer
         self.conv1 = nn.Sequential(
@@ -156,11 +151,13 @@ class MyNet(nn.Module):
         self.stage4 = self._make_stage(out_channels[2], out_channels[3], 4)
 
         # Final 1x1 convolution layer before classification
+        '''
         self.conv5 = nn.Sequential(
             nn.Conv2d(out_channels[3], out_channels[4], 1, 1, 0, bias=False),
             nn.BatchNorm2d(out_channels[4]),
             nn.ReLU(inplace=True)
         )
+        '''
 
 
     def _make_stage(self, in_channels, out_channels, num_blocks):
@@ -178,6 +175,6 @@ class MyNet(nn.Module):
         x = self.stage2(x)  # Stage 2
         x = self.stage3(x)  # Stage 3
         x = self.stage4(x)  # Stage 4
-        x = self.conv5(x)  # Final 1x1 convolution
+        #x = self.conv5(x)  # Final 1x1 convolution
         x = F.adaptive_avg_pool2d(x, 1).view(x.size(0), -1)  # Adaptive average pooling
         return x
