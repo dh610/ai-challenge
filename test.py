@@ -6,7 +6,7 @@ from torchvision import transforms
 import sys
 
 from utils import load_latest_ckpt, TestDataset
-from model import MyModel, BasicBlock
+from model import MyModel, BasicBlock, MyNet
 
 train_labels = np.load('data/trainlabel.npy')
 test_images = np.load('data/testset.npy')
@@ -25,9 +25,10 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 model_save_path = "weight/"
 
 num_classes = len(np.unique(train_labels))
-model = MyModel(BasicBlock, [2, 1, 2], num_classes)
+model = MyNet()
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
+sys.exit(0)
 model, _ = load_latest_ckpt(model, model_save_path)
 
 if not torch.cuda.is_available():

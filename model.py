@@ -1,4 +1,6 @@
 import torch.nn as nn
+import torch
+import torch.nn.functional as F
 
 # Depthwise Separable Convolution
 class DSC(nn.Module):
@@ -79,3 +81,106 @@ class MyModel(nn.Module):
         x = self.conv5_x(x)
         x = self.avg_pool(x)
         return x.view(x.size(0), -1)
+
+class MyNetBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, stride):
+        super(MyNetBlock, self).__init__()
+        self.stride = stride
+        mid_channels = out_channels // 2
+
+        # First branch: Depthwise + Pointwise convolution
+        if stride == 2:
+            self.branch1 = nn.Sequential(
+                nn.Conv2d(in_channels, in_channels, 3, stride, 1, groups=in_channels, bias=False),
+                nn.BatchNorm2d(in_channels),
+                nn.Conv2d(in_channels, mid_channels, 1, 1, 0, bias=False),
+                nn.BatchNorm2d(mid_channels),
+                nn.ReLU(inplace=True)
+            )
+        else:
+            self.branch1 = nn.Identity()  # If stride = 1, the first branch remains unchanged
+
+        # Second branch: Pointwise + Depthwise convolution
+        self.branch2 = nn.Sequential(
+            nn.Conv2d(in_channels if stride == 2 else mid_channels, mid_channels, 1, 1, 0, bias=False),
+            nn.BatchNorm2d(mid_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(mid_channels, mid_channels, 3, stride, 1, groups=mid_channels, bias=False),
+            nn.BatchNorm2d(mid_channels),
+            nn.Conv2d(mid_channels, mid_channels, 1, 1, 0, bias=False),
+            nn.BatchNorm2d(mid_channels),
+            nn.ReLU(inplace=True)
+        )
+
+    def channel_shuffle(self, x):
+        batch_size, num_channels, height, width = x.size()
+        channels_per_group = num_channels // 2
+
+        # Split the channels into two groups and shuffle them
+        x = x.view(batch_size, 2, channels_per_group, height, width)
+        x = x.permute(0, 2, 1, 3, 4).contiguous()
+        x = x.view(batch_size, num_channels, height, width)
+        return x
+
+    def forward(self, x):
+        if self.stride == 2:
+            out = torch.cat((self.branch1(x), self.branch2(x)), 1)  # Concatenate the two branches
+        else:
+            x1, x2 = x.chunk(2, dim=1)  # Split channels into two parts
+            out = torch.cat((x1, self.branch2(x2)), 1)
+
+        return self.channel_shuffle(out)  # Perform channel shuffle
+
+class MyNet(nn.Module):
+    def __init__(self, num_classes=100, model_size='0.5x'):
+        super(MyNet, self).__init__()
+        # Output channels for different model sizes
+        out_channels = {
+            '0.5x': (24, 48, 96, 192, 1024),
+            '1.0x': (24, 116, 232, 464, 1024),
+            '1.5x': (24, 176, 352, 704, 1024),
+            '2.0x': (24, 244, 488, 976, 2048),
+        }[model_size]
+
+        # Initial convolution layer
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(3, out_channels[0], 3, 2, 1, bias=False),
+            nn.BatchNorm2d(out_channels[0]),
+            nn.ReLU(inplace=True)
+        )
+        self.maxpool = nn.MaxPool2d(3, 2, 1)  # Max pooling layer
+
+        # Stacked ShuffleNetV2 blocks for different stages
+        self.stage2 = self._make_stage(out_channels[0], out_channels[1], 4)
+        self.stage3 = self._make_stage(out_channels[1], out_channels[2], 8)
+        self.stage4 = self._make_stage(out_channels[2], out_channels[3], 4)
+
+        # Final 1x1 convolution layer before classification
+        self.conv5 = nn.Sequential(
+            nn.Conv2d(out_channels[3], out_channels[4], 1, 1, 0, bias=False),
+            nn.BatchNorm2d(out_channels[4]),
+            nn.ReLU(inplace=True)
+        )
+
+        # Fully connected layer for classification
+        self.fc = nn.Linear(out_channels[4], num_classes)
+
+    def _make_stage(self, in_channels, out_channels, num_blocks):
+        # The first block in each stage has stride=2, the rest have stride=1
+        strides = [2] + [1] * (num_blocks - 1)
+        blocks = []
+        for stride in strides:
+            blocks.append(ShuffleNetV2Block(in_channels, out_channels, stride))
+            in_channels = out_channels  # Update in_channels for the next block
+        return nn.Sequential(*blocks)
+
+    def forward(self, x):
+        x = self.conv1(x)  # Initial convolution
+        x = self.maxpool(x)  # Max pooling
+        x = self.stage2(x)  # Stage 2
+        x = self.stage3(x)  # Stage 3
+        x = self.stage4(x)  # Stage 4
+        x = self.conv5(x)  # Final 1x1 convolution
+        x = F.adaptive_avg_pool2d(x, 1).view(x.size(0), -1)  # Adaptive average pooling
+        x = self.fc(x)  # Fully connected layer
+        return x
