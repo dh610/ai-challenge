@@ -170,7 +170,7 @@ class MyNet(nn.Module):
         strides = [2] + [1] * (num_blocks - 1)
         blocks = []
         for stride in strides:
-            blocks.append(ShuffleNetV2Block(in_channels, out_channels, stride))
+            blocks.append(MyNetBlock(in_channels, out_channels, stride))
             in_channels = out_channels  # Update in_channels for the next block
         return nn.Sequential(*blocks)
 
