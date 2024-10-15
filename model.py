@@ -51,11 +51,11 @@ class MyModel(nn.Module):
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
 
-        self.conv2_x = self._make_layer(block, 64, num_block[1], 1)
-        self.conv3_x = self._make_layer(block, 128, num_block[2], 2)
-        self.conv4_x = self._make_layer(block, 256, num_block[3], 2)
+        self.conv2_x = self._make_layer(block, 32, num_block[0], 1)
+        self.conv3_x = self._make_layer(block, 64, num_block[1], 2)
+        self.conv4_x = self._make_layer(block, 128, num_block[2], 2)
 
-        self.lastconv = DSC(128, num_classes, 2)
+        self.conv5_x= DSC(128, num_classes, 2)
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
 
     def _make_layer(self, block, out_channels, num_blocks, stride):
@@ -73,6 +73,6 @@ class MyModel(nn.Module):
         x = self.conv2_x(x)
         x = self.conv3_x(x)
         x = self.conv4_x(x)
-        x = self.lastconv(x)
+        x = self.conv5_x(x)
         x = self.avg_pool(x)
         return x.view(x.size(0), -1)
