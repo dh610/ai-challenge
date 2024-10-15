@@ -55,7 +55,11 @@ class MyModel(nn.Module):
         self.conv3_x = self._make_layer(block, 64, num_block[1], 2)
         self.conv4_x = self._make_layer(block, 128, num_block[2], 2)
 
-        self.conv5_x= DSC(128, num_classes, 2)
+        self.conv5_x = nn.Sequential(
+            DSC(in_channels=128, out_channels=num_classes, stride=2),
+            nn.LayerNorm([num_classes, 1, 1]),
+            nn.ReLU(),
+        )
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
 
     def _make_layer(self, block, out_channels, num_blocks, stride):
@@ -69,7 +73,6 @@ class MyModel(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        #x = self.conv1_x(x)
         x = self.conv2_x(x)
         x = self.conv3_x(x)
         x = self.conv4_x(x)
