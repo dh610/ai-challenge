@@ -65,10 +65,10 @@ class BasicBlock(nn.Module):
 class MyModel(nn.Module):
     def __init__(self, block, num_block, num_classes=100):
         super(MyModel, self).__init__()
-        self.in_channels = 32
+        self.in_channels = 16
 
         self.conv1 = nn.Sequential(
-            DSC(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1, bias=False),
+            DSC(in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1)
