@@ -25,7 +25,7 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 model_save_path = "weight/"
 
 num_classes = len(np.unique(train_labels))
-model = MyModel(BasicBlock, [3, 2, 1, 1], num_classes)
+model = MyModel(BasicBlock, [2, 2, 1, 1], num_classes)
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 sys.exit(0)
