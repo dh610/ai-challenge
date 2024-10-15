@@ -34,7 +34,7 @@ class BasicBlock(nn.Module):
         if stride != 1 or in_channels != out_channels:
             self.shortcut = nn.Sequential(
                 DSC(in_channels=in_channels, out_channels=out_channels, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm(out_channels),
+                nn.BatchNorm2d(out_channels),
             )
 
     def forward(self, x):
@@ -48,7 +48,7 @@ class MyModel(nn.Module):
 
         self.conv1 = nn.Sequential(
             DSC(in_channels=3, out_channels=16, kernel_size=7, stride=2, padding=3, bias=False),
-            nn.BatchNorm(16),
+            nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
