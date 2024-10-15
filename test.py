@@ -23,17 +23,13 @@ test_transform = transforms.Compose([
 test_dataset = TestDataset(test_images, dummy_labels, transform=test_transform)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
-first_image, _ = test_dataset[0]  # 첫 번째 샘플 가져오기
-print(f"Image size: {first_image.shape}")  # 출력: (채널, 높이, 너비)
-sys.exit(0)
-
 model_save_path = "weight/"
 
 num_classes = len(np.unique(train_labels))
 model = MyNet()
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
-summary(MyNet, (3, 256, 256))
+summary(MyNet, (3, 32, 32))
 sys.exit(0)
 model, _ = load_latest_ckpt(model, model_save_path)
 
