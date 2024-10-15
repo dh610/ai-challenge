@@ -136,7 +136,7 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
         # Output channels for different model sizes
         out_channels = {
-            '0.5x': (24, 48, 96, 192, 1024),
+            '0.5x': (24, 48, 96, 192, 512),
             '1.0x': (24, 116, 232, 464, 1024),
             '1.5x': (24, 176, 352, 704, 1024),
             '2.0x': (24, 244, 488, 976, 2048),
