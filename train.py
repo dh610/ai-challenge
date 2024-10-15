@@ -5,9 +5,11 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision import transforms
+import random
 
 from model import MyModel, BasicBlock
 from utils import AugmentedDataset
+from augmentation import cutmix_data, mixup_data
 import sys
 
 # 데이터 로드
@@ -33,11 +35,11 @@ train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentat
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
-model = MyModel(BasicBlock, [2, 4, 6, 1], num_classes)
+model = MyModel(BasicBlock, [2, 2, 1, 1], num_classes)
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
+optimizer = optim.AdamW(model.parameters(), lr=0.01, weight_decay=0.01)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=500)
 
 if not torch.cuda.is_available():
@@ -59,6 +61,20 @@ for epoch in range(num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
+
+        prob = random.random()
+        if prob < 0.6:
+            if random.random() < 0.5:
+                images, targets_a, targets_b, lam = mixup_data(images, labels)
+            else:
+                images, targets_a, targets_b, lam = cutmix_data(images, labels)
+
+            outputs = model(images)
+            loss = lam * criterion(outputs, targets_a) + (1 - lam) * criterion(outputs, targets_b)
+
+        else:
+            outputs = model(images)
+            loss = criterion(outputs, labels)
 
         outputs = model(images)
         loss = criterion(outputs, labels)
