@@ -26,7 +26,7 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 model_save_path = "weight/"
 
 num_classes = len(np.unique(train_labels))
-model = MyNet()
+model = MyNet().to('cuda')
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 summary(model, (3, 32, 32))
