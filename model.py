@@ -136,7 +136,7 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
         # Output channels for different model sizes
         out_channels = {
-            '0.5x': (24, 48, 96, 192, 512),
+            '0.5x': (24, 48, 96, 192, num_classes),
             '1.0x': (24, 116, 232, 464, 1024),
             '1.5x': (24, 176, 352, 704, 1024),
             '2.0x': (24, 244, 488, 976, 2048),
@@ -162,8 +162,6 @@ class MyNet(nn.Module):
             nn.ReLU(inplace=True)
         )
 
-        # Fully connected layer for classification
-        self.fc = nn.Linear(out_channels[4], num_classes)
 
     def _make_stage(self, in_channels, out_channels, num_blocks):
         # The first block in each stage has stride=2, the rest have stride=1
@@ -182,5 +180,4 @@ class MyNet(nn.Module):
         x = self.stage4(x)  # Stage 4
         x = self.conv5(x)  # Final 1x1 convolution
         x = F.adaptive_avg_pool2d(x, 1).view(x.size(0), -1)  # Adaptive average pooling
-        x = self.fc(x)  # Fully connected layer
         return x
