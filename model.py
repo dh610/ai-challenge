@@ -74,6 +74,6 @@ class MyModel(nn.Module):
         x = self.conv2_x(x)
         x = self.conv3_x(x)
         x = self.conv4_x(x)
-        x = self.conv5_x(x)
+        x = self.lastconv(x)
         x = self.avg_pool(x)
         return x.view(x.size(0), -1)
