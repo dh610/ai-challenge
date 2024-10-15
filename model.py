@@ -46,7 +46,7 @@ class MyModel(nn.Module):
 
         self.conv1 = nn.Sequential(
             DSC(in_channels=3, out_channels=8, kernel_size=7, stride=2, padding=3, bias=False),
-            nn.GroupNorm(groups, 16),
+            nn.GroupNorm(groups, 8),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
