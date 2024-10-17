@@ -20,7 +20,6 @@ test_images = np.load('data/testset.npy')
 mean = [129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0]  # [0, 1]
 std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
 
-# 데이터 증강 및 정규화
 augmentation = transforms.Compose([
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),
@@ -60,19 +59,8 @@ for epoch in range(num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-
-        if epoch >= 300:
-            if random.random() < 0.5:
-                images, targets_a, targets_b, lam = mixup_data(device, images, labels)
-            else:
-                images, targets_a, targets_b, lam = cutmix_data(device, images, labels)
-
-            outputs = model(images)
-            loss = lam * criterion(outputs, targets_a) + (1 - lam) * criterion(outputs, targets_b)
-        else:
-
-            outputs = model(images)
-            loss = criterion(outputs, labels)
+        outputs = model(images)
+        loss = criterion(outputs, labels)
 
         optimizer.zero_grad()
         loss.backward()
