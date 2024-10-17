@@ -6,11 +6,15 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision import transforms
 import random
+from sklearn.model_selection import train_test_split
 
 from model import MyModel, BasicBlock, MyNet
 from utils import AugmentedDataset
 from augmentation import cutmix_data, mixup_data
 import sys
+
+random.seed(10)
+np.random.seed(123)
 
 # 데이터 로드
 train_images = np.load('data/trainset.npy')
@@ -28,12 +32,19 @@ augmentation = transforms.Compose([
     transforms.Normalize(mean=mean, std=std),
 ])
 
+train_images, val_images, train_labels, val_labels = train_test_split(
+    train_images, train_labels, test_size=0.1, random_state=42, stratify=train_labels
+)
+
 # AugmentedDataset 클래스 정의
 train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
+val_dataset = AugmentedDataset(val_images, val_labels, transform=augmentation)
+
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
+val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
-model = MyNet()
+model = MyModel(BasicBlock)
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 
@@ -50,9 +61,29 @@ model.to(device)
 num_epochs = 100
 model_save_path = "weight/epoch_"
 
-model.train()
+# Functino to evlauate
+def evaluate(model, val_loader, criterion, device):
+    model.eval()
+    running_loss = 0.0
+    running_correct = 0
+    total_samples = 0
+    with torch.no_grad():
+        for images, labels in val_loader:
+            images, labels = images.to(device), labels.to(device).long()
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+
+            running_loss += loss.item()
+            _, preds = torch.max(outputs, 1)
+            running_correct += torch.sum(preds == labels).item()
+            total_samples += labels.size(0)
+
+    val_loss = running_loss / len(val_loader)
+    val_accuracy = running_correct / total_samples
+    return val_loss, val_accuracy
 
 for epoch in range(num_epochs):
+    model.train()
     prev_loss = float('inf')
     running_loss = 0.0
     running_correct = 0
@@ -78,7 +109,10 @@ for epoch in range(num_epochs):
         print('Failed to better loss!!!!')
     prev_loss = train_loss
     train_accuracy = running_correct / total_samples
-    print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}")
+    val_loss, val_acc = evaluate(model, val_loader, criterion, device)
+    print(f"Epoch [{epoch+1}/{num_epochs}], "                                           \
+          f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, "       \
+          f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}")
 
     if (epoch+1) % 10 == 0:
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
