@@ -50,7 +50,7 @@ print(f"Total number of trainable parameters: {total_params}")
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
+# scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
@@ -103,7 +103,7 @@ for epoch in range(num_epochs):
         running_correct += torch.sum(preds == labels).item()
         total_samples += labels.size(0)
 
-    scheduler.step()
+    # scheduler.step()
     train_loss =  running_loss / len(train_loader)
     if train_loss > prev_loss:
         print('Failed to better loss!!!!')
