@@ -40,8 +40,8 @@ train_images, val_images, train_labels, val_labels = train_test_split(
 train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
 val_dataset = AugmentedDataset(val_images, val_labels, transform=augmentation)
 
-train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=2)
-val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=2)
+train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
+val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
 model = MyModel(BasicBlock)
