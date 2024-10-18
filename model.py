@@ -53,6 +53,7 @@ class MyModel(nn.Module):
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
 
+        self.conv1_x = self._make_layer(block, 16, 1)
         self.conv2_x = self._make_layer(block, 32, 2)
         self.conv3_x = self._make_layer(block, 64, 1, 2)
         self.conv4_x = self._make_layer(block, 128, 2)
