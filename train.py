@@ -126,6 +126,6 @@ for epoch in range(start_epoch, num_epochs):
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
 
-    prev_loss = val_loss
+        prev_loss = val_loss
 
 
