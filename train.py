@@ -58,7 +58,7 @@ if not torch.cuda.is_available():
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-num_epochs = 100
+num_epochs = 500
 model_save_path = "weight/epoch_"
 
 # Functino to evlauate
