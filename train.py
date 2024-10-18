@@ -83,9 +83,9 @@ def evaluate(model, val_loader, criterion, device):
     val_accuracy = running_correct / total_samples
     return val_loss, val_accuracy
 
+prev_loss = float('inf')
 for epoch in range(start_epoch, num_epochs):
     model.train()
-    prev_loss = float('inf')
     running_loss = 0.0
     running_correct = 0
     total_samples = 0
