@@ -115,18 +115,17 @@ for epoch in range(start_epoch, num_epochs):
 
     # scheduler.step()
     train_loss =  running_loss / len(train_loader)
-    if train_loss > prev_loss:
-        print('Failed to better loss!!!!')
-    prev_loss = train_loss
     train_accuracy = running_correct / total_samples
     val_loss, val_acc = evaluate(model, val_loader, criterion, device)
     print(f"Epoch [{epoch+1}/{num_epochs}], "                                           \
           f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, "       \
           f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}")
 
-    if (epoch+1) % 10 == 0:
+    if prev_loss > val_loss:
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
+
+    prev_loss = val_loss
 
 
