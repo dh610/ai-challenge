@@ -72,6 +72,7 @@ class MyModel(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
+        x = self.conv1_x(x)
         x = self.conv2_x(x)
         x = self.conv3_x(x)
         x = self.conv4_x(x)
