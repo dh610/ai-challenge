@@ -53,18 +53,18 @@ class MyModel(nn.Module):
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
 
-        self.conv2_x = self._make_layer(block, 32, 2, 1)
-        self.conv3_x = self._make_layer(block, 64, 1, 1)
-        self.conv4_x = self._make_layer(block, 128, 2, 1)
+        self.conv2_x = self._make_layer(block, 32, 2)
+        self.conv3_x = self._make_layer(block, 64, 1)
+        self.conv4_x = self._make_layer(block, 128, 2)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(128, num_classes)
 
-    def _make_layer(self, block, out_channels, num_blocks, padding=0, stride=1):
+    def _make_layer(self, block, out_channels, num_blocks, stride=1):
         strides = [stride] + [1] * (num_blocks - 1)
         layers = []
         for stride in strides:
-            layers.append(block(self.in_channels, out_channels, stride, padding))
+            layers.append(block(self.in_channels, out_channels, stride))
             self.in_channels = out_channels * block.expansion
 
         return nn.Sequential(*layers)
