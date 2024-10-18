@@ -105,7 +105,7 @@ for epoch in range(num_epochs):
 
     scheduler.step()
     train_loss =  running_loss / len(train_loader)
-    if train_loss < prev_loss:
+    if train_loss > prev_loss:
         print('Failed to better loss!!!!')
     prev_loss = train_loss
     train_accuracy = running_correct / total_samples
