@@ -54,7 +54,7 @@ class MyModel(nn.Module):
         )
 
         self.conv2_x = self._make_layer(block, 32, 2)
-        self.conv3_x = self._make_layer(block, 64, 1)
+        self.conv3_x = self._make_layer(block, 64, 1, 2)
         self.conv4_x = self._make_layer(block, 128, 2)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
