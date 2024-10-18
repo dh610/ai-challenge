@@ -39,8 +39,8 @@ train_images, val_images, train_labels, val_labels = train_test_split(
 train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
 val_dataset = AugmentedDataset(val_images, val_labels, transform=augmentation)
 
-train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
-val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
+train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=2)
+val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=2)
 
 num_classes = len(np.unique(train_labels))
 model = MyModel(BasicBlock)
@@ -48,7 +48,7 @@ total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
+optimizer = optim.AdamW(model.parameters(), lr=0.0005, weight_decay=0.01)
 # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 
 if not torch.cuda.is_available():
