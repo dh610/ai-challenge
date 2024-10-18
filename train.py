@@ -8,7 +8,7 @@ from torchvision import transforms
 import random
 from sklearn.model_selection import train_test_split
 
-from model import MyModel, BasicBlock, MyNet
+from model import MyModel, BasicBlock
 from utils import AugmentedDataset
 from augmentation import cutmix_data, mixup_data
 import sys

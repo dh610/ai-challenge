@@ -7,7 +7,7 @@ import sys
 from torchsummary import summary
 
 from utils import load_latest_ckpt, TestDataset
-from model import MyModel, BasicBlock, MyNet
+from model import MyModel, BasicBlock
 
 train_labels = np.load('data/trainlabel.npy')
 test_images = np.load('data/testset.npy')
