@@ -59,6 +59,7 @@ class MyModel(nn.Module):
         self.conv5_x = self._make_layer(block, 128, 2)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
+        self.dropout = nn.Dropout(0.5)
         self.fc = nn.Linear(128, num_classes)
 
     def _make_layer(self, block, out_channels, num_blocks, stride=1):
@@ -78,4 +79,5 @@ class MyModel(nn.Module):
         x = self.conv5_x(x)
         x = self.avg_pool(x)
         x = x.view(x.size(0), -1)
+        x = self.dropout(x)
         return self.fc(x)
