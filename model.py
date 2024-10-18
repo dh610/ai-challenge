@@ -58,7 +58,7 @@ class MyModel(nn.Module):
         self.conv4_x = self._make_layer(block, 128, 2)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(256, num_classes)
+        self.fc = nn.Linear(128, num_classes)
 
     def _make_layer(self, block, out_channels, num_blocks, stride=1):
         strides = [stride] + [1] * (num_blocks - 1)
