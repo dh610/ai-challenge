@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from model import MyModel, BasicBlock
 from utils import AugmentedDataset
 from augmentation import cutmix_data, mixup_data
+from utils import load_latest_ckpt
 import sys
 
 random.seed(10)
@@ -44,11 +45,12 @@ val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=2
 
 num_classes = len(np.unique(train_labels))
 model = MyModel(BasicBlock)
+model, start_epoch = load_latest_ckpt(model, "weight/")
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.01)
+optimizer = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0.01)
 # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 
 if not torch.cuda.is_available():
@@ -81,7 +83,7 @@ def evaluate(model, val_loader, criterion, device):
     val_accuracy = running_correct / total_samples
     return val_loss, val_accuracy
 
-for epoch in range(num_epochs):
+for epoch in range(start_epoch, num_epochs):
     model.train()
     prev_loss = float('inf')
     running_loss = 0.0
@@ -89,8 +91,17 @@ for epoch in range(num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-        outputs = model(images)
-        loss = criterion(outputs, labels)
+        #outputs = model(images)
+        #loss = criterion(outputs, labels)
+
+        if random.random() < 0.7:
+            images, labels_a, labels_b, lam = cutmix_data(images, labels, alpha=1.0)
+            outputs = model(images)
+            loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
+        else:
+            images, labels_a, labels_b, lam = mixup_data(images, labels, alpha=1.0)
+            outputs = model(images)
+            loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
 
         optimizer.zero_grad()
         loss.backward()
