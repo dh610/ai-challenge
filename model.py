@@ -47,13 +47,14 @@ class SOTA(nn.Module):
         self.in_channels = 16
 
         self.conv1 = nn.Sequential(
-            DSC(in_channels=3, out_channels=16, kernel_size=3, padding=1, bias=False),
+            #DSC(in_channels=3, out_channels=16, kernel_size=3, padding=1, bias=False),
+            nn.Conv2d(3, 16, 3, 1, False),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
 
-        self.conv2_x = self._make_layer(block, 16, 1)
+        #self.conv2_x = self._make_layer(block, 16, 1)
         self.conv3_x = self._make_layer(block, 32, 2)
         self.conv4_x = self._make_layer(block, 64, 1, 2)
         self.conv5_x = self._make_layer(block, 128, 2)
@@ -72,7 +73,7 @@ class SOTA(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.conv2_x(x)
+        #x = self.conv2_x(x)
         x = self.conv3_x(x)
         x = self.conv4_x(x)
         x = self.conv5_x(x)
