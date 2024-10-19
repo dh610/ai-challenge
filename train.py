@@ -47,7 +47,7 @@ val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4
 num_classes = len(np.unique(train_labels))
 model = SOTA(BasicBlock)
 model, start_epoch = load_latest_ckpt(model, "weight/")
-start_epoch = 0
+#start_epoch = 0
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 
