@@ -101,8 +101,8 @@ for epoch in range(start_epoch, num_epochs):
         images, labels = images.to(device), labels.to(device).long()
         #'''
         outputs = model(images)
-        outputs = outputs.unsqueeze(1)
-        loss = criterion(outputs, labels)
+        loss_outputs = outputs.unsqueeze(1)
+        loss = criterion(loss_outputs, labels)
 
         '''
         if random.random() < 0.3:
@@ -110,8 +110,8 @@ for epoch in range(start_epoch, num_epochs):
         else:
             images, labels_a, labels_b, lam = mixup_data(device, images, labels, alpha=1.0)
         outputs = model(images)
-        outputs = outputs.unsqueeze(1)
-        loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
+        loss_outputs = outputs.unsqueeze(1)
+        loss = lam * criterion(loss_outputs, labels_a) + (1 - lam) * criterion(loss_outputs, labels_b)
         '''
 
         optimizer.zero_grad()
