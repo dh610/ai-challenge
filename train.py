@@ -12,6 +12,7 @@ from model import SOTA, BasicBlock
 from utils import AugmentedDataset
 from augmentation import cutmix_data, mixup_data
 from utils import load_latest_ckpt
+from loss import SupConLoss
 import sys
 
 random.seed(10)
@@ -55,7 +56,8 @@ model, start_epoch = load_latest_ckpt(model, "weight/")
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 
-criterion = nn.CrossEntropyLoss()
+# criterion = nn.CrossEntropyLoss()
+criterion = SupConLoss()
 optimizer = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0.01)
 # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 
@@ -102,7 +104,7 @@ for epoch in range(start_epoch, num_epochs):
         loss = criterion(outputs, labels)
 
         '''
-        if random.random() < 0.7:
+        if random.random() < 0.3:
             images, labels_a, labels_b, lam = cutmix_data(device, images, labels, alpha=1.0)
             outputs = model(images)
             loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
