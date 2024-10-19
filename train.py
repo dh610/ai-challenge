@@ -34,7 +34,7 @@ augmentation = transforms.Compose([
     transforms.Normalize(mean=mean, std=std),
 ])
 
-val_transform = transforms.Compos([
+val_transform = transforms.Compose([
     transforms.ToTensor(),  # [0, 255] → [0, 1]
     transforms.Normalize(mean=mean, std=std),
 ])
