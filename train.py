@@ -80,6 +80,7 @@ def evaluate(model, val_loader, criterion, device):
         for images, labels in val_loader:
             images, labels = images.to(device), labels.to(device).long()
             outputs = model(images)
+            loss_outputs = outputs.unsqueeze(1)
             loss = criterion(outputs, labels)
 
             running_loss += loss.item()
