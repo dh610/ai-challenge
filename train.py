@@ -8,10 +8,10 @@ from torchvision import transforms
 import random
 from sklearn.model_selection import train_test_split
 
-from model import SOTA, BasicBlock
+from model import MyModel
 from utils import AugmentedDataset
 from augmentation import cutmix_data, mixup_data
-from utils import load_latest_ckpt
+from utils import load_latest_ckpt, warmup_scheduler
 from loss import SupConLoss
 import sys
 
@@ -50,16 +50,17 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_worker
 val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
-model = SOTA(BasicBlock)
+model = MyModel()
 model, start_epoch = load_latest_ckpt(model, "weight/")
 #start_epoch = 0
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 
-# criterion = nn.CrossEntropyLoss()
-criterion = SupConLoss()
+criterion = nn.CrossEntropyLoss()
+# criterion = SupConLoss()
 optimizer = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0.01)
 # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
+# scheduler = warmup_scheduler(10, 100)
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
@@ -80,8 +81,8 @@ def evaluate(model, val_loader, criterion, device):
         for images, labels in val_loader:
             images, labels = images.to(device), labels.to(device).long()
             outputs = model(images)
-            loss_outputs = outputs.unsqueeze(1)
-            loss = criterion(loss_outputs, labels)
+            outputs = outputs.unsqueeze(1)
+            loss = criterion(outputs, labels)
 
             running_loss += loss.item()
             _, preds = torch.max(outputs, 1)
@@ -102,8 +103,8 @@ for epoch in range(start_epoch, num_epochs):
         images, labels = images.to(device), labels.to(device).long()
         #'''
         outputs = model(images)
-        loss_outputs = outputs.unsqueeze(1)
-        loss = criterion(loss_outputs, labels)
+        outputs = outputs.unsqueeze(1)
+        loss = criterion(outputs, labels)
 
         '''
         if random.random() < 0.3:
@@ -111,8 +112,8 @@ for epoch in range(start_epoch, num_epochs):
         else:
             images, labels_a, labels_b, lam = mixup_data(device, images, labels, alpha=1.0)
         outputs = model(images)
-        loss_outputs = outputs.unsqueeze(1)
-        loss = lam * criterion(loss_outputs, labels_a) + (1 - lam) * criterion(loss_outputs, labels_b)
+        outputs = outputs.unsqueeze(1)
+        loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
         '''
 
         optimizer.zero_grad()

@@ -7,7 +7,7 @@ import sys
 from torchsummary import summary
 
 from utils import load_latest_ckpt, TestDataset
-from model import SOTA, BasicBlock
+from model import SCLModel, NeoResNet, BasicBlock
 
 train_labels = np.load('data/trainlabel.npy')
 test_images = np.load('data/testset.npy')
@@ -26,7 +26,7 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 model_save_path = "weight/"
 
 num_classes = len(np.unique(train_labels))
-model = SOTA(BasicBlock).to('cuda')
+model = SCLModel().to('cuda')
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 model, _ = load_latest_ckpt(model, model_save_path)

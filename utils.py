@@ -40,6 +40,16 @@ class TestDataset(TensorDataset):
 
         return image, label
 
+def warmup_scheduler(optimizer, warmup_epochs, total_epochs, warmup_factor=1e-3):
+    def lr_lambda(current_epoch):
+        if current_epoch < warmup_epochs:
+            # warmup step
+            return warmup_factor + (1 - warmup_factor) * (current_epoch / warmup_epochs)
+        else:
+            # cosine annealing step
+            return 0.5 * (1 + np.cos(np.pi * (current_epoch - warmup_epochs) / (total_epochs - warmup_epochs)))
+    return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
+
 
 def load_latest_ckpt(net, ckpt_path):
     checkpoint_files = [f for f in os.listdir(ckpt_path) if f.startswith('epoch_') and f.endswith('.pth')]

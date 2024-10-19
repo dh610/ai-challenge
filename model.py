@@ -41,9 +41,9 @@ class BasicBlock(nn.Module):
         x = self.residual_function(x) + self.shortcut(x)
         return self.relu(x)
 
-class SOTA(nn.Module):
+class NeoResNet(nn.Module):
     def __init__(self, block, num_classes=100):
-        super(SOTA, self).__init__()
+        super(NeoResNet, self).__init__()
         self.in_channels = 16
 
         self.conv1 = nn.Sequential(
@@ -60,7 +60,7 @@ class SOTA(nn.Module):
         self.conv5_x = self._make_layer(block, 128, 2)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(128, num_classes)
+        #self.fc = nn.Linear(128, num_classes)
 
     def _make_layer(self, block, out_channels, num_blocks, stride=1):
         strides = [stride] + [1] * (num_blocks - 1)
@@ -79,4 +79,19 @@ class SOTA(nn.Module):
         x = self.conv5_x(x)
         x = self.avg_pool(x)
         x = x.view(x.size(0), -1)
-        return self.fc(x)
+        return x
+        #return self.fc(x)
+
+
+class SCLModel(nn.Module):
+    def __init__(self, feat_dim=100):
+        super(SCLModel, self).__init__()
+        self.encoder = NeoResNet(BasicBlock)
+        self.head = nn.Linear(128, feat_dim)
+
+    def forward(self, x):
+        x = self.encoder(x)
+        return F.normalize(self.head(x), dim=1)
+
+def MyModel():
+    return NeoResNet(BasicBlock)
