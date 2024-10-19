@@ -28,7 +28,13 @@ std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
 augmentation = transforms.Compose([
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),
-    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
+    transforms.ColorJitner(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
+    transforms.RandomCrop(24, 24),
+    transforms.ToTensor(),  # [0, 255] → [0, 1]
+    transforms.Normalize(mean=mean, std=std),
+])
+
+val_transform = transforms.Compos([
     transforms.ToTensor(),  # [0, 255] → [0, 1]
     transforms.Normalize(mean=mean, std=std),
 ])
@@ -39,7 +45,7 @@ train_images, val_images, train_labels, val_labels = train_test_split(
 
 # AugmentedDataset 클래스 정의
 train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
-val_dataset = AugmentedDataset(val_images, val_labels, transform=augmentation)
+val_dataset = AugmentedDataset(val_images, val_labels, transform=val_transform)
 
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
 val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
