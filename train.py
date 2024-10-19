@@ -58,7 +58,7 @@ print(f"Total number of trainable parameters: {total_params}")
 
 criterion = nn.CrossEntropyLoss()
 # criterion = SupConLoss()
-optimizer = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0.01)
+optimizer = optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.01)
 # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 # scheduler = warmup_scheduler(10, 100)
 
