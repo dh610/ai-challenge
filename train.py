@@ -97,6 +97,7 @@ for epoch in range(start_epoch, num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
+        '''
         outputs = model(images)
         loss = criterion(outputs, labels)
 
@@ -109,7 +110,6 @@ for epoch in range(start_epoch, num_epochs):
             images, labels_a, labels_b, lam = mixup_data(device, images, labels, alpha=1.0)
             outputs = model(images)
             loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
-        '''
 
         optimizer.zero_grad()
         loss.backward()
@@ -133,6 +133,7 @@ for epoch in range(start_epoch, num_epochs):
         prev_acc = val_acc
         if prev_acc < 0.5:
             continue
+
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
