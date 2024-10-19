@@ -8,7 +8,7 @@ from torchvision import transforms
 import random
 from sklearn.model_selection import train_test_split
 
-from model import MyModel, BasicBlock
+from model import SOTA, BasicBlock
 from utils import AugmentedDataset
 from augmentation import cutmix_data, mixup_data
 from utils import load_latest_ckpt
@@ -26,9 +26,9 @@ mean = [129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0]  # [0, 1]
 std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
 
 augmentation = transforms.Compose([
-    transforms.RandomHorizontalFlip(p=0.5),
-    transforms.RandomRotation(degrees=15),
-    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
+    #transforms.RandomHorizontalFlip(p=0.5),
+    #transforms.RandomRotation(degrees=15),
+    #transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
     transforms.ToTensor(),  # [0, 255] → [0, 1]
     transforms.Normalize(mean=mean, std=std),
 ])
@@ -45,7 +45,7 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_worker
 val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
 
 num_classes = len(np.unique(train_labels))
-model = MyModel(BasicBlock)
+model = SOTA(BasicBlock)
 model, start_epoch = load_latest_ckpt(model, "weight/")
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
@@ -92,9 +92,10 @@ for epoch in range(start_epoch, num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-        #outputs = model(images)
-        #loss = criterion(outputs, labels)
+        outputs = model(images)
+        loss = criterion(outputs, labels)
 
+        '''
         if random.random() < 0.7:
             images, labels_a, labels_b, lam = cutmix_data(device, images, labels, alpha=1.0)
             outputs = model(images)
@@ -103,6 +104,7 @@ for epoch in range(start_epoch, num_epochs):
             images, labels_a, labels_b, lam = mixup_data(device, images, labels, alpha=1.0)
             outputs = model(images)
             loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
+        '''
 
         optimizer.zero_grad()
         loss.backward()
@@ -122,7 +124,7 @@ for epoch in range(start_epoch, num_epochs):
           f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, "       \
           f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}")
 
-    if prev_loss > val_loss:
+    if epoch > 50 and prev_loss > val_loss:
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")

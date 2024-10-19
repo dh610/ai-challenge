@@ -41,9 +41,9 @@ class BasicBlock(nn.Module):
         x = self.residual_function(x) + self.shortcut(x)
         return self.relu(x)
 
-class MyModel(nn.Module):
+class SOTA(nn.Module):
     def __init__(self, block, num_classes=100):
-        super(MyModel, self).__init__()
+        super(SOTA, self).__init__()
         self.in_channels = 16
 
         self.conv1 = nn.Sequential(
