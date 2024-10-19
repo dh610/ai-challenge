@@ -56,7 +56,7 @@ total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.01)
+optimizer = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0.01)
 # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 
 if not torch.cuda.is_available():
@@ -104,7 +104,7 @@ for epoch in range(start_epoch, num_epochs):
         loss = criterion(outputs, labels)
 
         '''
-        if random.random() < 0.7:
+        if random.random() < 0.3:
             images, labels_a, labels_b, lam = cutmix_data(device, images, labels, alpha=1.0)
             outputs = model(images)
             loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
@@ -131,12 +131,15 @@ for epoch in range(start_epoch, num_epochs):
           f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, "       \
           f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}")
 
-    if epoch - start_epoch > 10 and prev_loss > val_loss or cnt == 20:
+    if prev_loss > val_loss or cnt == 20:
+        prev_loss = val_loss
+        cnt = 0
+
+        if epoch - start_epoch >= 10:
+            continue
+
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
-
-        prev_loss = val_loss
-        cnt = 0
 
 
