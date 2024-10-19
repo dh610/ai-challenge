@@ -135,9 +135,6 @@ for epoch in range(start_epoch, num_epochs):
         prev_loss = val_loss
         cnt = 0
 
-        if epoch - start_epoch >= 10:
-            continue
-
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
