@@ -28,7 +28,7 @@ std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
 augmentation = transforms.Compose([
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),
-    transforms.ColorJitner(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
     transforms.RandomCrop(24, 24),
     transforms.ToTensor(),  # [0, 255] → [0, 1]
     transforms.Normalize(mean=mean, std=std),
