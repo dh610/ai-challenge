@@ -28,8 +28,6 @@ std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
 augmentation = transforms.Compose([
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(degrees=15),
-    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
-    transforms.RandomCrop(24, 24),
     transforms.ToTensor(),  # [0, 255] → [0, 1]
     transforms.Normalize(mean=mean, std=std),
 ])
@@ -101,10 +99,11 @@ for epoch in range(start_epoch, num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
+        '''
         outputs = model(images)
         loss = criterion(outputs, labels)
-
         '''
+
         if random.random() < 0.7:
             images, labels_a, labels_b, lam = cutmix_data(device, images, labels, alpha=1.0)
             outputs = model(images)
@@ -113,7 +112,6 @@ for epoch in range(start_epoch, num_epochs):
             images, labels_a, labels_b, lam = mixup_data(device, images, labels, alpha=1.0)
             outputs = model(images)
             loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
-        '''
 
         optimizer.zero_grad()
         loss.backward()
