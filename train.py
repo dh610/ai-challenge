@@ -90,9 +90,7 @@ def evaluate(model, val_loader, criterion, device):
     return val_loss, val_accuracy
 
 prev_acc = 0
-cnt = 0
 for epoch in range(start_epoch, num_epochs):
-    cnt += 1
     model.train()
     running_loss = 0.0
     running_correct = 0
@@ -131,9 +129,8 @@ for epoch in range(start_epoch, num_epochs):
           f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, "       \
           f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}")
 
-    if prev_acc < val_acc or cnt == 20:
+    if prev_acc < val_acc:
         prev_acc = val_acc
-        cnt = 0
         if prev_acc < 50:
             continue
 
