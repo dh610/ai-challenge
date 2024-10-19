@@ -81,7 +81,6 @@ def evaluate(model, val_loader, criterion, device):
         for images, labels in val_loader:
             images, labels = images.to(device), labels.to(device).long()
             outputs = model(images)
-            outputs = outputs.unsqueeze(1)
             loss = criterion(outputs, labels)
 
             running_loss += loss.item()
@@ -103,7 +102,6 @@ for epoch in range(start_epoch, num_epochs):
         images, labels = images.to(device), labels.to(device).long()
         #'''
         outputs = model(images)
-        outputs = outputs.unsqueeze(1)
         loss = criterion(outputs, labels)
 
         '''
@@ -112,7 +110,6 @@ for epoch in range(start_epoch, num_epochs):
         else:
             images, labels_a, labels_b, lam = mixup_data(device, images, labels, alpha=1.0)
         outputs = model(images)
-        outputs = outputs.unsqueeze(1)
         loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
         '''
 
