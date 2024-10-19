@@ -100,7 +100,7 @@ for epoch in range(start_epoch, num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-        '''
+        #'''
         outputs = model(images)
         loss = criterion(outputs, labels)
 
