@@ -133,7 +133,6 @@ for epoch in range(start_epoch, num_epochs):
         prev_acc = val_acc
         if prev_acc < 50:
             continue
-
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
