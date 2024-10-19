@@ -100,12 +100,12 @@ for epoch in range(start_epoch, num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-        '''
+        #'''
         outputs = model(images)
         loss = criterion(outputs, labels)
 
         '''
-        if random.random() < 0.3:
+        if random.random() < 0.7:
             images, labels_a, labels_b, lam = cutmix_data(device, images, labels, alpha=1.0)
         else:
             images, labels_a, labels_b, lam = mixup_data(device, images, labels, alpha=1.0)
@@ -131,7 +131,7 @@ for epoch in range(start_epoch, num_epochs):
           f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, "       \
           f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}")
 
-    if prev_acc < val_acc:
+    if prev_acc <= val_acc:
         prev_acc = val_acc
         if prev_acc < 0.5:
             continue
