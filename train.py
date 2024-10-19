@@ -81,7 +81,7 @@ def evaluate(model, val_loader, criterion, device):
             images, labels = images.to(device), labels.to(device).long()
             outputs = model(images)
             loss_outputs = outputs.unsqueeze(1)
-            loss = criterion(outputs, labels)
+            loss = criterion(loss_outputs, labels)
 
             running_loss += loss.item()
             _, preds = torch.max(outputs, 1)
