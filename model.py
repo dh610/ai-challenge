@@ -60,7 +60,7 @@ class NeoResNet(nn.Module):
         self.conv5_x = self._make_layer(block, 128, 2)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-        #self.fc = nn.Linear(128, num_classes)
+        self.fc = nn.Linear(128, num_classes)
 
     def _make_layer(self, block, out_channels, num_blocks, stride=1):
         strides = [stride] + [1] * (num_blocks - 1)
@@ -79,8 +79,8 @@ class NeoResNet(nn.Module):
         x = self.conv5_x(x)
         x = self.avg_pool(x)
         x = x.view(x.size(0), -1)
-        return x
-        #return self.fc(x)
+        #return x
+        return self.fc(x)
 
 
 class SCLModel(nn.Module):
