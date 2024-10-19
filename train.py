@@ -102,7 +102,7 @@ for epoch in range(start_epoch, num_epochs):
         loss = criterion(outputs, labels)
 
         '''
-        if random.random() < 0.3:
+        if random.random() < 0.7:
             images, labels_a, labels_b, lam = cutmix_data(device, images, labels, alpha=1.0)
             outputs = model(images)
             loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
