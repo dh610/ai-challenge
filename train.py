@@ -67,7 +67,7 @@ if not torch.cuda.is_available():
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-num_epochs = 500
+num_epochs = 1000
 model_save_path = "weight/epoch_"
 
 # Functino to evlauate
@@ -133,7 +133,7 @@ for epoch in range(start_epoch, num_epochs):
           f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, "       \
           f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}")
 
-    if epoch > 50 and prev_loss > val_loss or cnt == 20:
+    if epoch - start_epoch > 10 and prev_loss > val_loss or cnt == 20:
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
