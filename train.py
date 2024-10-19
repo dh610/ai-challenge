@@ -26,9 +26,9 @@ mean = [129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0]  # [0, 1]
 std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
 
 augmentation = transforms.Compose([
-    #transforms.RandomHorizontalFlip(p=0.5),
-    #transforms.RandomRotation(degrees=15),
-    #transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(degrees=15),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
     transforms.ToTensor(),  # [0, 255] → [0, 1]
     transforms.Normalize(mean=mean, std=std),
 ])
@@ -46,7 +46,7 @@ val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4
 
 num_classes = len(np.unique(train_labels))
 model = SOTA(BasicBlock)
-#model, start_epoch = load_latest_ckpt(model, "weight/")
+model, start_epoch = load_latest_ckpt(model, "weight/")
 start_epoch = 0
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
@@ -86,7 +86,9 @@ def evaluate(model, val_loader, criterion, device):
     return val_loss, val_accuracy
 
 prev_loss = float('inf')
+cnt = 0
 for epoch in range(start_epoch, num_epochs):
+    cnt += 1
     model.train()
     running_loss = 0.0
     running_correct = 0
@@ -125,11 +127,12 @@ for epoch in range(start_epoch, num_epochs):
           f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, "       \
           f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}")
 
-    if epoch > 50 and prev_loss > val_loss:
+    if epoch > 50 and prev_loss > val_loss or cnt == 20:
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
         print(f"Model weights saved to {tmp_save_path}.")
 
         prev_loss = val_loss
+        cnt = 0
 
 
