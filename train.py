@@ -89,7 +89,7 @@ def evaluate(model, val_loader, criterion, device):
     val_accuracy = running_correct / total_samples
     return val_loss, val_accuracy
 
-prev_loss = float('inf')
+prev_acc = 0
 cnt = 0
 for epoch in range(start_epoch, num_epochs):
     cnt += 1
@@ -99,7 +99,6 @@ for epoch in range(start_epoch, num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-        '''
         outputs = model(images)
         loss = criterion(outputs, labels)
 
@@ -112,6 +111,7 @@ for epoch in range(start_epoch, num_epochs):
             images, labels_a, labels_b, lam = mixup_data(device, images, labels, alpha=1.0)
             outputs = model(images)
             loss = lam * criterion(outputs, labels_a) + (1 - lam) * criterion(outputs, labels_b)
+        '''
 
         optimizer.zero_grad()
         loss.backward()
@@ -131,9 +131,11 @@ for epoch in range(start_epoch, num_epochs):
           f"Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, "       \
           f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_acc:.4f}")
 
-    if prev_loss > val_loss or cnt == 20:
-        prev_loss = val_loss
+    if prev_acc < val_acc or cnt == 20:
+        prev_acc = val_acc
         cnt = 0
+        if prev_acc < 50:
+            continue
 
         tmp_save_path = model_save_path + f"{epoch+1}.pth"
         torch.save(model.state_dict(), tmp_save_path)
