@@ -57,9 +57,11 @@ class NeoResNet(nn.Module):
         '''
 
         self.conv1 = self._make_layer(block, 4, 5)
-        self.conv1_x = self._make_layer(block, 8, 4)
+        self.conv1_x = self._make_layer(block, 8, 3)
+        self.conv1_2x = self._make_layer(block, 8, 1, 2)
         self.conv2_x = self._make_layer(block, 16, 4)
-        self.conv3_x = self._make_layer(block, 32, 3)
+        self.conv3_x = self._make_layer(block, 32, 2)
+        self.conv3_2x = self._make_layer(block, 32, 1, 2)
         self.conv4_x = self._make_layer(block, 64, 4)
         self.conv5_x = self._make_layer(block, 128, 1)
 
@@ -78,8 +80,10 @@ class NeoResNet(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         x = self.conv1_x(x)
+        x = self.conv1_2x(x)
         x = self.conv2_x(x)
         x = self.conv3_x(x)
+        x = self.conv3_2x(x)
         x = self.conv4_x(x)
         x = self.conv5_x(x)
         x = self.avg_pool(x)
