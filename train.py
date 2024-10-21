@@ -36,8 +36,8 @@ def load_and_concat():
     train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
     val_dataset = AugmentedDataset(val_images, val_labels, transform=val_transform)
 
-    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
-    val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
+    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
+    val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=4)
 
     return train_loader, val_loader, len(np.unique(train_labels))
 

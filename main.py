@@ -44,7 +44,7 @@ def main():
         if prev_acc <= val_acc:
             prev_acc = val_acc
             if prev_acc < 0.5:
-                return
+                continue
 
             tmp_save_path = model_save_path + f"{epoch+1}.pth"
             torch.save(model.state_dict(), tmp_save_path)
