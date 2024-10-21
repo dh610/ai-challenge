@@ -85,5 +85,5 @@ class NeoResNet(nn.Module):
         x = x.view(x.size(0), -1)
         return self.fc(x)
 
-def MyModel():
-    return NeoResNet(BasicBlock)
+def MyModel(num_classes=100):
+    return NeoResNet(BasicBlock, num_classes)

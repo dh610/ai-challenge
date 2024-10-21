@@ -10,15 +10,15 @@ import hashlib
 transform = transforms.Compose([
     transforms.ToTensor(),
 ])
-train_data = CIFAR100(root="./data", train=True, download=True, transform=transform)
-test_data = CIFAR100(root="./data", train=False, download=True, transform=transform)
+train_data = CIFAR100(root="./data/CIFAR", train=True, download=True, transform=transform)
+test_data = CIFAR100(root="./data/CIFAR", train=False, download=True, transform=transform)
 
 # CIFAR-100의 전체 이미지와 라벨
 cifar_images = np.concatenate([train_data.data, test_data.data], axis=0)  # (60000, 32, 32, 3)
 cifar_labels = np.concatenate([train_data.targets, test_data.targets], axis=0)  # (60000,)
 
 # testset.npy 데이터 로드
-x_test = np.load('./drive/MyDrive/AI_Challenge/testset.npy')  # (N, 32, 32, 3) 형태
+x_test = np.load('data/testset.npy')  # (N, 32, 32, 3) 형태
 
 # testset.npy의 각 이미지에 대해 CIFAR-100에서 가장 가까운 이미지의 라벨을 찾기
 matched_labels = []
@@ -38,6 +38,4 @@ for test_image in tqdm(x_test, desc="Matching images using hash"):
     matched_label = cifar_image_hashes.get(test_hash, None)  # 동일한 이미지의 라벨을 가져옴
     matched_labels.append(matched_label)
 
-# 결과 출력
-print("Matched labels for the testset.npy images:")
-print(matched_labels)
+np.save('data/testlabel.npy', np.array(matched_labels))
