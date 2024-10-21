@@ -24,7 +24,8 @@ def load_and_concat():
     augmentation = transforms.Compose([
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomCrop(32, padding=4),
-        #transforms.RandomRotation(degrees=15),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+        transforms.RandomErasing(p=0.5, scale=(0.02, 0.33), ratio=(0.3, 3.3), value='random'),
         transforms.ToTensor(),  # [0, 255] → [0, 1]
         transforms.Normalize(mean=mean, std=std),
     ])
