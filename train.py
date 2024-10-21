@@ -23,7 +23,7 @@ def load_and_concat():
 
     augmentation = transforms.Compose([
         transforms.RandomHorizontalFlip(p=0.5),
-        #transforms.RandomCrop(32, padding=4),
+        transforms.RandomCrop(32, padding=4),
         #transforms.RandomRotation(degrees=15),
         transforms.ToTensor(),  # [0, 255] → [0, 1]
         transforms.Normalize(mean=mean, std=std),
@@ -49,7 +49,7 @@ def train(device, model, criterion, optimizer, train_loader, scheduler = 'None')
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-        '''
+        #'''
         outputs = model(images)
         loss = criterion(outputs, labels)
 
