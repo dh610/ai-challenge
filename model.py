@@ -44,17 +44,13 @@ class BasicBlock(nn.Module):
 class NeoResNet(nn.Module):
     def __init__(self, block, num_classes=100):
         super(NeoResNet, self).__init__()
-        self.in_channels = 3
+        self.in_channels = 4
 
-        '''
-        self.conv1 = nn.Sequential(
-            #DSC(in_channels=3, out_channels=16, kernel_size=3, padding=1, bias=False),
-            nn.Conv2d(3, 16, 3, padding=1, bias=False),
-            nn.BatchNorm2d(16),
+        self.conv0 = nn.Sequential(
+            DSC(in_channels=3, out_channels=4, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(4),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
-        '''
 
         self.conv1 = self._make_layer(block, 4, 5)
         self.conv1_x = self._make_layer(block, 8, 4)
@@ -76,6 +72,7 @@ class NeoResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+        x = self.conv0(x)
         x = self.conv1(x)
         x = self.conv1_x(x)
         x = self.conv2_x(x)
