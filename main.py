@@ -29,7 +29,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.01)
 
-    scheduler = optim.CosineAnnealingLR(optimizer, T_max=20)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=20)
 
     num_epochs = 1000
     model_save_path = "weight/epoch_"
