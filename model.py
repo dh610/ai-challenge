@@ -56,8 +56,8 @@ class NeoResNet(nn.Module):
         )
         '''
 
-        self.conv1 = self._make_layer(block, 4, 4)
-        self.conv1_x = self._make_layer(block, 8, 5)
+        self.conv1 = self._make_layer(block, 4, 5)
+        self.conv1_x = self._make_layer(block, 8, 4)
         self.conv2_x = self._make_layer(block, 16, 4)
         self.conv3_x = self._make_layer(block, 32, 3)
         self.conv4_x = self._make_layer(block, 64, 4)
