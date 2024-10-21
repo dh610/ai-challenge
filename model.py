@@ -51,7 +51,6 @@ class NeoResNet(nn.Module):
             nn.BatchNorm2d(4),
             nn.ReLU(),
             nn.Conv2d(4, 4, 3, 1, 1, groups=4, bias=False),
-            nn.BatchNorm2d(4),
             nn.ReLU(),
         )
 
