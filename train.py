@@ -49,7 +49,7 @@ def train(device, model, criterion, optimizer, train_loader, scheduler = 'None')
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-        #'''
+        '''
         outputs = model(images)
         loss = criterion(outputs, labels)
 
