@@ -49,12 +49,12 @@ def train(device, model, criterion, optimizer, train_loader, scheduler = 'None')
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-        #'''
+        '''
         outputs = model(images)
         loss = criterion(outputs, labels)
 
         '''
-        if random.random() < 0.3:
+        if random.random() < 0.7:
             images, labels_a, labels_b, lam = cutmix_data(device, images, labels, alpha=1.0)
         else:
             images, labels_a, labels_b, lam = mixup_data(device, images, labels, alpha=1.0)
