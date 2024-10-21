@@ -18,12 +18,13 @@ def load_and_concat():
     val_images = np.load('data/testset.npy')
     val_labels = np.load('data/testlabel.npy')
 
-    mean = [129.4377 / 255.0, 124.1342 / 255.0, 112.4572 / 255.0]  # [0, 1]
-    std = [68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0]
+    mean = [0.4914, 0.4822, 0.4465]
+    std = [0.2470, 0.2435, 0.2616]
 
     augmentation = transforms.Compose([
         transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomRotation(degrees=15),
+        transforms.RandomCrop(32, padding=4),
+        #transforms.RandomRotation(degrees=15),
         transforms.ToTensor(),  # [0, 255] → [0, 1]
         transforms.Normalize(mean=mean, std=std),
     ])
