@@ -29,12 +29,14 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.01)
 
+    scheduler = optim.CosineAnnealingLR(optimizer, T_max=25)
+
     num_epochs = 1000
     model_save_path = "weight/epoch_"
 
     prev_acc = 0
     for epoch in range(start_epoch, num_epochs):
-        train_loss, train_acc = train(device, model, criterion, optimizer, train_loader)
+        train_loss, train_acc = train(device, model, criterion, optimizer, train_loader, scheduler)
         val_loss, val_acc = evaluate(model, val_loader, criterion, device)
 
         print(f"Epoch [{epoch+1}/{num_epochs}], "                                           \
