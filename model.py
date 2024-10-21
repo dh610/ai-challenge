@@ -50,9 +50,6 @@ class NeoResNet(nn.Module):
             DSC(in_channels=3, out_channels=4, kernel_size=3, padding=1, bias=False),
             nn.BatchNorm2d(4),
             nn.ReLU(),
-            DSC(in_channels=4, out_channels=4, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(4),
-            nn.ReLU(),
         )
 
         self.conv1 = self._make_layer(block, 4, 5)
