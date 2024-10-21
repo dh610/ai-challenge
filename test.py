@@ -26,18 +26,18 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 model_save_path = "weight/"
 
 num_classes = len(np.unique(train_labels))
-model = MyModel().to('cuda')
-total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-print(f"Total number of trainable parameters: {total_params}")
-model, _ = load_latest_ckpt(model, model_save_path)
-summary(model, input_size=(3, 32, 32))
-sys.exit(1)
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
     sys.exit
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
+
+model = MyModel().to(device)
+total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+print(f"Total number of trainable parameters: {total_params}")
+model, _ = load_latest_ckpt(model, model_save_path)
+summary(model, input_size=(3, 32, 32))
+
 
 model.eval()
 test_predictions = []
