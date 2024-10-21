@@ -51,16 +51,13 @@ val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4
 
 num_classes = len(np.unique(train_labels))
 model = MyModel()
-model, start_epoch = load_latest_ckpt(model, "weight/")
-#start_epoch = 0
+#model, start_epoch = load_latest_ckpt(model, "weight/")
+start_epoch = 0
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total number of trainable parameters: {total_params}")
 
 criterion = nn.CrossEntropyLoss()
-# criterion = SupConLoss()
 optimizer = optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.01)
-# scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
-# scheduler = warmup_scheduler(10, 100)
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
@@ -100,7 +97,7 @@ for epoch in range(start_epoch, num_epochs):
     total_samples = 0
     for images, labels in tqdm(train_loader):
         images, labels = images.to(device), labels.to(device).long()
-        '''
+        #'''
         outputs = model(images)
         loss = criterion(outputs, labels)
 

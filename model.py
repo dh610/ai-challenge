@@ -44,8 +44,9 @@ class BasicBlock(nn.Module):
 class NeoResNet(nn.Module):
     def __init__(self, block, num_classes=100):
         super(NeoResNet, self).__init__()
-        self.in_channels = 16
+        self.in_channels = 3
 
+        '''
         self.conv1 = nn.Sequential(
             #DSC(in_channels=3, out_channels=16, kernel_size=3, padding=1, bias=False),
             nn.Conv2d(3, 16, 3, padding=1, bias=False),
@@ -53,11 +54,14 @@ class NeoResNet(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size = 3, stride = 2, padding = 1),
         )
+        '''
 
-        #self.conv2_x = self._make_layer(block, 16, 1)
-        self.conv3_x = self._make_layer(block, 32, 2)
-        self.conv4_x = self._make_layer(block, 64, 1, 2)
-        self.conv5_x = self._make_layer(block, 128, 2)
+        self.conv1 = self._make_layer(block, 4, 1)
+        self.conv1_x = self._make_layer(block, 8, 3)
+        self.conv2_x = self._make_layer(block, 16, 3)
+        self.conv3_x = self._make_layer(block, 32, 3)
+        self.conv4_x = self._make_layer(block, 64, 3)
+        self.conv5_x = self._make_layer(block, 128, 1, 2)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(128, num_classes)
@@ -73,25 +77,14 @@ class NeoResNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        #x = self.conv2_x(x)
+        x = self.conv1_x(x)
+        x = self.conv2_x(x)
         x = self.conv3_x(x)
         x = self.conv4_x(x)
         x = self.conv5_x(x)
         x = self.avg_pool(x)
         x = x.view(x.size(0), -1)
-        #return x
         return self.fc(x)
-
-
-class SCLModel(nn.Module):
-    def __init__(self, feat_dim=100):
-        super(SCLModel, self).__init__()
-        self.encoder = NeoResNet(BasicBlock)
-        self.head = nn.Linear(128, feat_dim)
-
-    def forward(self, x):
-        x = self.encoder(x)
-        return F.normalize(self.head(x), dim=1)
 
 def MyModel():
     return NeoResNet(BasicBlock)
