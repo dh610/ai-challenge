@@ -56,12 +56,12 @@ class NeoResNet(nn.Module):
         )
         '''
 
-        self.conv1 = self._make_layer(block, 4, 1)
-        self.conv1_x = self._make_layer(block, 8, 3)
-        self.conv2_x = self._make_layer(block, 16, 3)
-        self.conv3_x = self._make_layer(block, 32, 3)
-        self.conv4_x = self._make_layer(block, 64, 3)
-        self.conv5_x = self._make_layer(block, 128, 1, 2)
+        self.conv1 = self._make_layer(block, 4, 4)
+        self.conv1_x = self._make_layer(block, 8, 4)
+        self.conv2_x = self._make_layer(block, 16, 4)
+        self.conv3_x = self._make_layer(block, 32, 4)
+        self.conv4_x = self._make_layer(block, 64, 4)
+        self.conv5_x = self._make_layer(block, 128, 1)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(128, num_classes)
