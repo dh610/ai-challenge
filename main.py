@@ -21,15 +21,15 @@ def main():
     device = torch.device("cuda")
 
     model = MyModel(num_classes).to(device)
-    #model, start_epoch = load_latest_ckpt(model, "weight/")
-    start_epoch = 0
+    model, start_epoch = load_latest_ckpt(model, "weight/")
+    #start_epoch = 0
     total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Total number of trainable parameters: {total_params}")
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.01)
 
-    scheduler = optim.CosineAnnealingLR(optimizer, T_max=25)
+    scheduler = optim.CosineAnnealingLR(optimizer, T_max=20)
 
     num_epochs = 1000
     model_save_path = "weight/epoch_"
