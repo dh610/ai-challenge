@@ -9,8 +9,8 @@ from torchsummary import summary
 from utils import load_latest_ckpt, TestDataset
 from model import MyModel
 
+train_labels = np.load('data/trainset.npy')
 test_images = np.load('data/testset.npy')
-test_labels = np.load('data/testlabel.npy')
 
 dummy_labels = np.zeros(len(test_images))
 
@@ -20,12 +20,12 @@ test_transform = transforms.Compose([
                          std=[68.2042 / 255.0, 65.4584 / 255.0, 70.4745 / 255.0])
 ])
 
-test_dataset = TestDataset(test_images, test_labels, transform=test_transform)
+test_dataset = TestDataset(test_images, dummy_labels, transform=test_transform)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
 model_save_path = "weight/"
 
-num_classes = len(np.unique(test_labels))
+num_classes = len(np.unique(train_labels))
 
 if not torch.cuda.is_available():
     print("CUDA is disabled")
@@ -41,8 +41,6 @@ summary(model, input_size=(3, 32, 32))
 
 model.eval()
 test_predictions = []
-running_correct = 0
-total_samples = 0
 with torch.no_grad():
     for images, labels in test_loader:
         images = images.to(device)
@@ -50,11 +48,6 @@ with torch.no_grad():
         outputs = model(images)
         _, predicted = torch.max(outputs, 1)
         test_predictions.append(predicted.cpu().numpy())
-        running_correct += torch.sum(predicted == labels).item()
-        total_samples += labels.size(0)
-
-test_accuracy = running_correct / total_samples
-print(f"Test Accuracy: {test_accuracy:.4f}" )
 
 test_predictions = np.concatenate(test_predictions)
 predictions_df = pd.DataFrame(test_predictions, columns=["label"])

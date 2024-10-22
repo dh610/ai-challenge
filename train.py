@@ -6,6 +6,8 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision import transforms
 import random
+from sklearn.model_selection import train_test_split
+
 
 from utils import AugmentedDataset
 from augmentation import cutmix_data, mixup_data
@@ -15,8 +17,6 @@ def load_and_concat():
     # Load datesets
     train_images = np.load('data/testset.npy')
     train_labels = np.load('data/testlabel.npy')
-    val_images = np.load('data/testset.npy')
-    val_labels = np.load('data/testlabel.npy')
 
     mean = [0.4914, 0.4822, 0.4465]
     std = [0.2470, 0.2435, 0.2616]
@@ -35,8 +35,10 @@ def load_and_concat():
         transforms.Normalize(mean=mean, std=std),
     ])
 
-    train_dataset = AugmentedDataset(train_images, train_labels, transform=augmentation)
-    val_dataset = AugmentedDataset(val_images, val_labels, transform=val_transform)
+    x_train, x_val, y_train, y_val = train_test_split(train_images, train_labels, test_size=0.1, random_state=42, stratify=train_labels)
+
+    train_dataset = AugmentedDataset(x_train, y_train, transform=augmentation)
+    val_dataset = AugmentedDataset(x_val, y_val, transform=val_transform)
 
     train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=4)
