@@ -46,6 +46,7 @@ total_samples = 0
 with torch.no_grad():
     for images, labels in test_loader:
         images = images.to(device)
+        labels = labels.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs, 1)
         test_predictions.append(predicted.cpu().numpy())
