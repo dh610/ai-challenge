@@ -53,8 +53,8 @@ with torch.no_grad():
         running_correct += torch.sum(predicted == labels).item()
         total_samples += labels.size(0)
 
-val_accuracy = running_correct / total_samples
-print(f"Val Accuracy: {val_accuracy:.4f}" )
+test_accuracy = running_correct / total_samples
+print(f"Test Accuracy: {test_accuracy:.4f}" )
 
 test_predictions = np.concatenate(test_predictions)
 predictions_df = pd.DataFrame(test_predictions, columns=["label"])

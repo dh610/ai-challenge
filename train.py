@@ -13,8 +13,8 @@ import sys
 
 def load_and_concat():
     # Load datesets
-    train_images = np.load('data/trainset.npy')
-    train_labels = np.load('data/trainlabel.npy')
+    train_images = np.load('data/testset.npy')
+    train_labels = np.load('data/testlabel.npy')
     val_images = np.load('data/testset.npy')
     val_labels = np.load('data/testlabel.npy')
 
