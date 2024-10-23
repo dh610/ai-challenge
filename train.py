@@ -13,7 +13,7 @@ from utils import AugmentedDataset
 from augmentation import cutmix_data, mixup_data
 import sys
 
-def load_and_concat():
+def load_data():
     # Load datesets
     train_images = np.load('data/testset.npy')
     train_labels = np.load('data/testlabel.npy')

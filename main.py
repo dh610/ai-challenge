@@ -8,12 +8,12 @@ from model import MyModel
 from utils import load_latest_ckpt
 import sys
 
-from train import train, load_and_concat, evaluate
+from train import train, load_data, evaluate
 
 
 def main():
     # Load datasets
-    train_loader, val_loader, num_classes = load_and_concat()
+    train_loader, val_loader, num_classes = load_data()
 
     if not torch.cuda.is_available():
         print("CUDA is disabled")
